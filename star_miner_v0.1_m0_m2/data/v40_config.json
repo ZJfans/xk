@@ -1,0 +1,191 @@
+{
+  "schema_version": 4,
+  "content_version": "4.0.0",
+  "time": {
+    "real_seconds_per_game_day": 30.0,
+    "ticks_per_game_day": 60,
+    "market_update_interval_days": 1,
+    "financial_report_interval_days": 30,
+    "ai_eval_interval_days": 7
+  },
+  "starting_assets": {
+    "cash_cr": 30000,
+    "mine_silo_tonnes": 300,
+    "port_warehouse_tonnes": 500,
+    "free_ground_scans": 1,
+    "free_orbital_surveys": 1,
+    "starting_ship_type": "falcon_light"
+  },
+  "minerals": {
+    "iron_titanium": {
+      "id": "iron_titanium",
+      "name_zh": "铁钛矿",
+      "icon": "⛏",
+      "color": "f0a04a",
+      "base_price_cr": 100,
+      "mining_var_cost_cr": 8,
+      "daily_regular_quota_t": 600,
+      "daily_spot_quota_t": 100,
+      "role_zh": "稳定、大宗、考验运力；用于基础工程和研究交付"
+    },
+    "silicon_crystal": {
+      "id": "silicon_crystal",
+      "name_zh": "晶硅矿",
+      "icon": "💎",
+      "color": "49d6e4",
+      "base_price_cr": 180,
+      "mining_var_cost_cr": 12,
+      "daily_regular_quota_t": 360,
+      "daily_spot_quota_t": 80,
+      "role_zh": "中值订单、讲究交付时机；用于扫描与航电研究"
+    },
+    "energy_crystal": {
+      "id": "energy_crystal",
+      "name_zh": "星能晶",
+      "icon": "⚡",
+      "color": "b888f8",
+      "base_price_cr": 420,
+      "mining_var_cost_cr": 25,
+      "daily_regular_quota_t": 180,
+      "daily_spot_quota_t": 50,
+      "role_zh": "低产量、高价值、远域经营；用于跃迁与高阶工程"
+    },
+    "phase_ore": {
+      "id": "phase_ore",
+      "name_zh": "异相矿",
+      "icon": "✦",
+      "color": "f2b55c",
+      "base_price_cr": 900,
+      "mining_var_cost_cr": 45,
+      "daily_regular_quota_t": 90,
+      "daily_spot_quota_t": 30,
+      "role_zh": "稀少、终局订单；用于深空观测与旗舰工程"
+    }
+  },
+  "facilities": {
+    "drill_platform": {"cost_cr": 8000, "lift_t_per_day": 60, "upkeep_cr_per_day": 50},
+    "mining_head": {"cost_cr": 2000, "rate_t_per_day": 40, "radius_cells": 4, "upkeep_cr_per_day": 20},
+    "soft_bore": {"cost_cr_per_cell": 100, "flow_t_per_day": 60, "upkeep_cr_per_cell": 0.5, "build_cells_per_day": 8},
+    "hard_bore": {"cost_cr_per_cell": 300, "flow_t_per_day": 60, "upkeep_cr_per_cell": 0.5, "build_cells_per_day": 4},
+    "silo_expand": {"cost_cr": 6000, "extra_tonnes": 500, "upkeep_cr_per_day": 10},
+    "platform_upgrade": {"cost_cr": 9000, "lift_t_per_day": 100, "extra_upkeep_cr": 20},
+    "bore_upgrade": {"cost_ratio": 0.60, "flow_t_per_day": 120, "extra_upkeep_ratio": 0.25},
+    "base_upkeep_cr_per_day": 60,
+    "ground_scan": {"cost_cr": 300, "radius_cells": 8},
+    "orbital_survey": {"base_cost_cr": 2000, "base_days": 2, "exclusive_days": 10},
+    "port_storage_fee_cr_per_t_day": 0.5
+  },
+  "ships": {
+    "falcon_light": {
+      "id": "falcon_light",
+      "name_zh": "隼式轻型运矿船",
+      "price_cr": 38000,
+      "capacity_t": 100,
+      "speed_factor": 1.0,
+      "load_days": 0.25,
+      "unload_days": 0.25,
+      "turnaround_days": 0.50,
+      "fixed_trip_fee_cr": 400,
+      "distance_fee_cr": 2000,
+      "daily_upkeep_cr": 40,
+      "requires_tech": ""
+    },
+    "peregrine_med": {
+      "id": "peregrine_med",
+      "name_zh": "游隼可回收中型船",
+      "price_cr": 145000,
+      "capacity_t": 350,
+      "speed_factor": 0.9,
+      "load_days": 0.40,
+      "unload_days": 0.40,
+      "turnaround_days": 0.70,
+      "fixed_trip_fee_cr": 700,
+      "distance_fee_cr": 1250,
+      "daily_upkeep_cr": 180,
+      "requires_tech": "L1"
+    },
+    "leviathan_heavy": {
+      "id": "leviathan_heavy",
+      "name_zh": "巨鲸重型矿运母舰",
+      "price_cr": 480000,
+      "capacity_t": 1000,
+      "speed_factor": 0.7,
+      "load_days": 0.75,
+      "unload_days": 0.75,
+      "turnaround_days": 1.50,
+      "fixed_trip_fee_cr": 1800,
+      "distance_fee_cr": 2200,
+      "daily_upkeep_cr": 650,
+      "requires_tech": "L3"
+    }
+  },
+  "clusters": [
+    {
+      "id": "dawn_frontier",
+      "name_zh": "晨曦边境",
+      "theme_zh": "近港、浅层矿、基础设施成熟（小额投资、快速回款）",
+      "distance_l": 0.5,
+      "gravity_g": 1.0,
+      "requires_tech": ""
+    },
+    {
+      "id": "crimson_sands",
+      "name_zh": "赤沙星群",
+      "theme_zh": "硬岩夹层、集中深矿（绕行、升级钻头或分期建设）",
+      "distance_l": 1.2,
+      "gravity_g": 1.0,
+      "requires_tech": ""
+    },
+    {
+      "id": "frost_ring",
+      "name_zh": "霜环星群",
+      "theme_zh": "扫描模糊、可观深层储量（先轨道详勘、分阶段投入）",
+      "distance_l": 2.0,
+      "gravity_g": 1.0,
+      "requires_tech": "L2"
+    },
+    {
+      "id": "molten_core",
+      "name_zh": "熔心星群",
+      "theme_zh": "地表槽位受限、高重力 1.3G、富矿集中（共用主井、提升主干运力）",
+      "distance_l": 2.2,
+      "gravity_g": 1.3,
+      "requires_tech": "L2"
+    },
+    {
+      "id": "glimmer_deep",
+      "name_zh": "幽光深域",
+      "theme_zh": "远距离高价值贸易、稀有异相矿（中转、储备运力、签约交付）",
+      "distance_l": 3.2,
+      "gravity_g": 1.15,
+      "requires_tech": "E4"
+    }
+  ],
+  "research_20": [
+    {"id": "E1", "branch": "勘探", "name_zh": "E1 · 深层扫描", "effect_zh": "扩大地面扫描可靠探测深度至全剖面 48 格", "req": [], "cost_cr": 12000, "days": 3, "samples": {}},
+    {"id": "E2", "branch": "勘探", "name_zh": "E2 · 轨道详勘", "effect_zh": "收窄轨道勘探储量误差区间，减少盲目竞价", "req": ["E1"], "cost_cr": 30000, "days": 6, "samples": {"silicon_crystal": 20}},
+    {"id": "E3", "branch": "勘探", "name_zh": "E3 · 断层识别", "effect_zh": "提前识别地下硬岩阻隔与最佳绕行路线", "req": ["E2"], "cost_cr": 65000, "days": 8, "samples": {"silicon_crystal": 40}},
+    {"id": "E4", "branch": "勘探", "name_zh": "E4 · 远域勘测", "effect_zh": "开放调查幽光深域等更远星团的候选天体", "req": ["E3", "L2"], "cost_cr": 150000, "days": 12, "samples": {"energy_crystal": 20}},
+    {"id": "E5", "branch": "勘探", "name_zh": "E5 · 异常定位", "effect_zh": "定位幽光深域特殊异相矿点与远古阵列", "req": ["E4"], "cost_cr": 300000, "days": 18, "samples": {"energy_crystal": 50}},
+    {"id": "M1", "branch": "采矿", "name_zh": "M1 · 硬岩钻头", "effect_zh": "允许井道穿越普通硬岩夹层（300 Cr/格）", "req": [], "cost_cr": 15000, "days": 3, "samples": {}},
+    {"id": "M2", "branch": "采矿", "name_zh": "M2 · 平台提升改造", "effect_zh": "解锁钻井平台 60 → 100 t/日 总提升产能改造", "req": ["M1"], "cost_cr": 28000, "days": 5, "samples": {"iron_titanium": 80}},
+    {"id": "M3", "branch": "采矿", "name_zh": "M3 · 主干扩容", "effect_zh": "解锁井道主干 60 → 120 t/日 输送容量改造", "req": ["M2"], "cost_cr": 55000, "days": 6, "samples": {"silicon_crystal": 30}},
+    {"id": "M4", "branch": "采矿", "name_zh": "M4 · 深井稳定", "effect_zh": "开发更深层高价值矿体，降低深井维护费 30%", "req": ["M3", "E3"], "cost_cr": 130000, "days": 10, "samples": {"energy_crystal": 15}},
+    {"id": "M5", "branch": "采矿", "name_zh": "M5 · 高密度采掘", "effect_zh": "单采掘头基础产能从 40 t/日 提升至 65 t/日", "req": ["M4"], "cost_cr": 280000, "days": 15, "samples": {"phase_ore": 10}},
+    {"id": "L1", "branch": "物流", "name_zh": "L1 · 复用货运平台", "effect_zh": "开放采购「游隼可回收中型船 (350 t)」", "req": [], "cost_cr": 30000, "days": 5, "samples": {}},
+    {"id": "L2", "branch": "物流", "name_zh": "L2 · 跨系航行", "effect_zh": "开放霜环星群与熔心星群跨恒星系航道", "req": ["L1"], "cost_cr": 70000, "days": 7, "samples": {"silicon_crystal": 40}},
+    {"id": "L3", "branch": "物流", "name_zh": "L3 · 重型货运", "effect_zh": "开放采购「巨鲸重型矿运母舰 (1,000 t)」", "req": ["L2", "M3"], "cost_cr": 160000, "days": 10, "samples": {"iron_titanium": 300}},
+    {"id": "L4", "branch": "物流", "name_zh": "L4 · 中转枢纽", "effect_zh": "支持建设中转星港，「轻型支线汇货+重型干线」降本", "req": ["L3"], "cost_cr": 280000, "days": 14, "samples": {"energy_crystal": 30}},
+    {"id": "L5", "branch": "物流", "name_zh": "L5 · 深空航行保障", "effect_zh": "开放幽光深域最远商业航线并降低远航费用 20%", "req": ["L4", "E4"], "cost_cr": 550000, "days": 20, "samples": {"energy_crystal": 80}},
+    {"id": "C1", "branch": "商业", "name_zh": "C1 · 履约资质", "effect_zh": "同时进行合同上限 2 → 3 份，开放中级高溢价订单", "req": [], "cost_cr": 18000, "days": 3, "samples": {}},
+    {"id": "C2", "branch": "商业", "name_zh": "C2 · 港仓长期租约", "effect_zh": "港仓可扩容至 2,000 t，吨日仓储费减半至 0.25 Cr/t/日", "req": ["C1"], "cost_cr": 40000, "days": 5, "samples": {}},
+    {"id": "C3", "branch": "商业", "name_zh": "C3 · 联合开发资格", "effect_zh": "可参与星港扩建与单步骤精炼（合金锭 / 高纯晶片）", "req": ["C2", "L2"], "cost_cr": 100000, "days": 8, "samples": {"iron_titanium": 150}},
+    {"id": "C4", "branch": "商业", "name_zh": "C4 · 跨域供应资格", "effect_zh": "开放跨星团大型固定高价合同", "req": ["C3"], "cost_cr": 240000, "days": 12, "samples": {"silicon_crystal": 80}},
+    {"id": "C5", "branch": "商业", "name_zh": "C5 · 星域旗舰承包", "effect_zh": "开放三大终局旗舰工程交付项目", "req": ["C4", "L4"], "cost_cr": 500000, "days": 18, "samples": {"energy_crystal": 50}}
+  ],
+  "rivals": [
+    {"id": "crimson_mining", "name_zh": "赤曜矿业", "focus_zh": "大宗矿区、扩大稳定产量", "color": "f08c82"},
+    {"id": "starring_transit", "name_zh": "星环运输", "focus_zh": "航线与港口扩建、运输服务竞争", "color": "49d6e4"},
+    {"id": "silver_dome", "name_zh": "银穹资本", "focus_zh": "高价订单与库存时机、阶段性卖货", "color": "f2b55c"}
+  ]
+}

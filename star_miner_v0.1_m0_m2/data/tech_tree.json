@@ -1,0 +1,91 @@
+{
+  "techs": {
+    "orbital_radar": {
+      "id": "orbital_radar",
+      "name_zh": "【探测科技 I】高精度地质遥感探针",
+      "name_en": "Geological Telemetry Probe",
+      "desc_zh": "扩大探测范围与准确性：地质探测时间减半至 0.5 日、探测费用减半至 $30，且星区竞拍的地质预测误差缩减 60%！",
+      "desc_en": "Survey time & fee reduced by 50%, narrowing geological prediction error in auctions.",
+      "cost_cents": 80000,
+      "requires": []
+    },
+    "titanium_structure": {
+      "id": "titanium_structure",
+      "name_zh": "【航天科技 I】高比冲轻量化箭体",
+      "name_en": "Lightweight Rocket Airframe",
+      "desc_zh": "优化火箭箭体结构（全箭干重 -1 单位），显著提升单趟有效运力与燃料效率。",
+      "desc_en": "Rocket dry mass reduced by 1 unit across all hulls, expanding payload capacity.",
+      "cost_cents": 100000,
+      "requires": []
+    },
+    "automated_logistics": {
+      "id": "automated_logistics",
+      "name_zh": "【仓储科技 I】地球自动化恒温仓库",
+      "name_en": "Automated Earth Warehouse",
+      "desc_zh": "地球母港最大库存容量从 16 箱扩建至 32 箱，且囤货等待高价期间的仓储维护成本降低 60%！",
+      "desc_en": "Earth storage expanded from 16 to 32 crates, and holding fee reduced by 60%.",
+      "cost_cents": 120000,
+      "requires": [
+        "titanium_structure"
+      ]
+    },
+    "aerospike_engine": {
+      "id": "aerospike_engine",
+      "name_zh": "【航天科技 II】猛禽复用着陆控制系统",
+      "name_en": "Reusable Landing Guidance",
+      "desc_zh": "往返燃料消耗降低 15%，并将可回收火箭与重型星舰的着陆回收可靠性提升至 98%+。",
+      "desc_en": "Rocket fuel burn reduced by 15% and recovery reliability boosted to 98%+.",
+      "cost_cents": 150000,
+      "requires": [
+        "titanium_structure"
+      ]
+    },
+    "fleet_expansion": {
+      "id": "fleet_expansion",
+      "name_zh": "【仓储科技 II】多工位发射与周转中心",
+      "name_en": "Multi-Pad Turnaround Hub",
+      "desc_zh": "地球基地并发运力调度上限从 3 艘扩充至 4 艘，支持四艘火箭同时往返运输！",
+      "desc_en": "Expand active fleet command slots from 3 to 4 concurrent vessels.",
+      "cost_cents": 180000,
+      "requires": [
+        "orbital_radar",
+        "automated_logistics"
+      ]
+    },
+    "laser_drill": {
+      "id": "laser_drill",
+      "name_zh": "【采矿科技 I】深孔高能激光钻探机",
+      "name_en": "Deep-Bore Laser Drill",
+      "desc_zh": "大幅提升钻探深度与高价值矿石采掘效率，高能晶簇矿开采速度翻倍至 2 箱/日！",
+      "desc_en": "Mining efficiency doubled; crystal production rate accelerated to 2 crates/day.",
+      "cost_cents": 200000,
+      "requires": [
+        "automated_logistics"
+      ]
+    },
+    "isru_refinery": {
+      "id": "isru_refinery",
+      "name_zh": "【采矿科技 II】星表原位制氧补给站",
+      "name_en": "In-Situ Propellant Station",
+      "desc_zh": "利用矿区伴生冰层就地制备返程推进剂，大幅降低偏远矿区与高重力矿区的返航运输成本！",
+      "desc_en": "Produce return propellants on site, slashing distant mining transport costs.",
+      "cost_cents": 240000,
+      "requires": [
+        "aerospike_engine",
+        "laser_drill"
+      ]
+    },
+    "starship_heavy": {
+      "id": "starship_heavy",
+      "name_zh": "【航天科技 III】重型可回收星舰 (Starship)",
+      "name_en": "Heavy Reusable Starship",
+      "desc_zh": "解锁第三类终极运力「重型星舰」（10 箱超大运力 / 极高可靠度 / 快速往返），适合远距离大规模矿业经营！",
+      "desc_en": "Unlock the Heavy Reusable Starship (10-crate capacity, high-speed transit).",
+      "cost_cents": 280000,
+      "requires": [
+        "aerospike_engine",
+        "fleet_expansion"
+      ]
+    }
+  }
+}
