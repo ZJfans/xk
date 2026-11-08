@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1440 900" width="1440" height="900">
+<rect x="0" y="0" width="1440" height="900" rx="0" fill="#07111b" stroke="none" stroke-width="1"/>
+<rect x="0" y="0" width="1440" height="71" rx="0" fill="#10202e" stroke="none" stroke-width="1"/>
+<text x="24" y="43" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="21" fill="#f3b66a" font-weight="700" letter-spacing="0" text-anchor="start">ROCKET PROSPECTORS  /  星矿大亨</text>
+<text x="426" y="42" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="15" fill="#98afbf" font-weight="600" letter-spacing="0" text-anchor="middle">总部</text>
+<rect x="504" y="14" width="133" height="43" rx="7" fill="#173243" stroke="#58d9eb" stroke-width="1"/>
+<text x="570" y="42" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="15" fill="#58d9eb" font-weight="600" letter-spacing="0" text-anchor="middle">矿区竞拍</text>
+<text x="714" y="42" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="15" fill="#98afbf" font-weight="600" letter-spacing="0" text-anchor="middle">太空采矿</text>
+<text x="858" y="42" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="15" fill="#98afbf" font-weight="600" letter-spacing="0" text-anchor="middle">火箭装配</text>
+<text x="1002" y="42" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="15" fill="#98afbf" font-weight="600" letter-spacing="0" text-anchor="middle">市场交易</text>
+<text x="1146" y="42" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="15" fill="#98afbf" font-weight="600" letter-spacing="0" text-anchor="middle">本轮结算</text>
+<text x="1402" y="43" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="16" fill="#78dfaf" font-weight="700" letter-spacing="0" text-anchor="end">40,000 Cr</text>
+<text x="30" y="119" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="31" fill="#e9f4fa" font-weight="700" letter-spacing="0" text-anchor="start">矿区经营权拍卖</text>
+<text x="31" y="149" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="15" fill="#98afbf" font-weight="400" letter-spacing="0" text-anchor="start">资源储量未知：在竞拍价格、勘探置信度和剩余启动资金之间权衡</text>
+<rect x="0" y="842" width="1440" height="58" rx="0" fill="#10202e" stroke="none" stroke-width="1"/>
+<text x="27" y="877" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="15" fill="#98afbf" font-weight="400" letter-spacing="0" text-anchor="start">下一步：先完成当前页面的关键决策</text>
+<text x="1413" y="877" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="13" fill="#f3b66a" font-weight="400" letter-spacing="0" text-anchor="end">UX V1.0 · 可编辑线框图 / 演示数据</text>
+<rect x="30" y="190" width="448" height="491" rx="10" fill="#173243" stroke="#58d9eb" stroke-width="2"/>
+<text x="56" y="232" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="15" fill="#58d9eb" font-weight="700" letter-spacing="0" text-anchor="start">◆ 矿区 F-01</text>
+<text x="56" y="284" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="29" fill="#e9f4fa" font-weight="700" letter-spacing="0" text-anchor="start">青岚碎星带</text>
+<line x1="56" y1="306" x2="450" y2="306" stroke="#2e5267" stroke-width="1" stroke-dasharray=""/>
+<text x="56" y="353" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="17" fill="#98afbf" font-weight="400" letter-spacing="0" text-anchor="start">富铁钛 · 估算可信度 65%</text>
+<text x="56" y="389" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="16" fill="#98afbf" font-weight="400" letter-spacing="0" text-anchor="start">环境风险：低风险</text>
+<text x="56" y="469" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="15" fill="#98afbf" font-weight="400" letter-spacing="0" text-anchor="start">竞拍参考价</text>
+<text x="56" y="510" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="31" fill="#f3b66a" font-weight="700" letter-spacing="0" text-anchor="start">7,600 Cr</text>
+<rect x="56" y="598" width="396" height="42" rx="6" fill="#58d9eb" stroke="#58d9eb" stroke-width="1"/><text x="254.0" y="626" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="15" fill="#07111b" font-weight="700" letter-spacing="0" text-anchor="middle">已选中</text>
+<rect x="498" y="190" width="448" height="491" rx="10" fill="#10202e" stroke="#2e5267" stroke-width="1"/>
+<text x="524" y="232" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="15" fill="#58d9eb" font-weight="700" letter-spacing="0" text-anchor="start">◆ 矿区 F-02</text>
+<text x="524" y="284" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="29" fill="#e9f4fa" font-weight="700" letter-spacing="0" text-anchor="start">赤曜外缘</text>
+<line x1="524" y1="306" x2="918" y2="306" stroke="#2e5267" stroke-width="1" stroke-dasharray=""/>
+<text x="524" y="353" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="17" fill="#98afbf" font-weight="400" letter-spacing="0" text-anchor="start">高价晶硅 · 估算可信度 42%</text>
+<text x="524" y="389" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="16" fill="#98afbf" font-weight="400" letter-spacing="0" text-anchor="start">环境风险：高波动</text>
+<text x="524" y="469" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="15" fill="#98afbf" font-weight="400" letter-spacing="0" text-anchor="start">竞拍参考价</text>
+<text x="524" y="510" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="31" fill="#f3b66a" font-weight="700" letter-spacing="0" text-anchor="start">11,200 Cr</text>
+<rect x="524" y="598" width="396" height="42" rx="6" fill="#173243" stroke="#2e5267" stroke-width="1"/><text x="722.0" y="626" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="15" fill="#e9f4fa" font-weight="700" letter-spacing="0" text-anchor="middle">选择此矿区</text>
+<rect x="966" y="190" width="448" height="491" rx="10" fill="#10202e" stroke="#2e5267" stroke-width="1"/>
+<text x="992" y="232" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="15" fill="#58d9eb" font-weight="700" letter-spacing="0" text-anchor="start">◆ 矿区 F-03</text>
+<text x="992" y="284" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="29" fill="#e9f4fa" font-weight="700" letter-spacing="0" text-anchor="start">霜环碎冰区</text>
+<line x1="992" y1="306" x2="1386" y2="306" stroke="#2e5267" stroke-width="1" stroke-dasharray=""/>
+<text x="992" y="353" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="17" fill="#98afbf" font-weight="400" letter-spacing="0" text-anchor="start">富水冰 · 估算可信度 30%</text>
+<text x="992" y="389" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="16" fill="#98afbf" font-weight="400" letter-spacing="0" text-anchor="start">环境风险：低温风险</text>
+<text x="992" y="469" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="15" fill="#98afbf" font-weight="400" letter-spacing="0" text-anchor="start">竞拍参考价</text>
+<text x="992" y="510" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="31" fill="#f3b66a" font-weight="700" letter-spacing="0" text-anchor="start">5,900 Cr</text>
+<rect x="992" y="598" width="396" height="42" rx="6" fill="#173243" stroke="#2e5267" stroke-width="1"/><text x="1190.0" y="626" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="15" fill="#e9f4fa" font-weight="700" letter-spacing="0" text-anchor="middle">选择此矿区</text>
+<rect x="30" y="705" width="1380" height="106" rx="9" fill="#10202e" stroke="#2e5267" stroke-width="1"/>
+<text x="53" y="750" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="16" fill="#e9f4fa" font-weight="400" letter-spacing="0" text-anchor="start">选中：F-01   /   此阶段先用固定成交价验证拍卖信息层级与确认过程</text>
+<rect x="994" y="738" width="377" height="42" rx="6" fill="#58d9eb" stroke="#58d9eb" stroke-width="1"/><text x="1182.5" y="766" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="15" fill="#07111b" font-weight="700" letter-spacing="0" text-anchor="middle">确认竞拍并进入星域  →</text>
+</svg>

@@ -1,0 +1,128 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1440 900" width="1440" height="900">
+<rect x="0" y="0" width="1440" height="900" rx="0" fill="#07111b" stroke="none" stroke-width="1"/>
+<rect x="0" y="0" width="1440" height="71" rx="0" fill="#10202e" stroke="none" stroke-width="1"/>
+<text x="24" y="43" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="21" fill="#f3b66a" font-weight="700" letter-spacing="0" text-anchor="start">ROCKET PROSPECTORS  /  星矿大亨</text>
+<text x="426" y="42" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="15" fill="#98afbf" font-weight="600" letter-spacing="0" text-anchor="middle">总部</text>
+<text x="570" y="42" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="15" fill="#98afbf" font-weight="600" letter-spacing="0" text-anchor="middle">矿区竞拍</text>
+<rect x="648" y="14" width="133" height="43" rx="7" fill="#173243" stroke="#58d9eb" stroke-width="1"/>
+<text x="714" y="42" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="15" fill="#58d9eb" font-weight="600" letter-spacing="0" text-anchor="middle">太空采矿</text>
+<text x="858" y="42" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="15" fill="#98afbf" font-weight="600" letter-spacing="0" text-anchor="middle">火箭装配</text>
+<text x="1002" y="42" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="15" fill="#98afbf" font-weight="600" letter-spacing="0" text-anchor="middle">市场交易</text>
+<text x="1146" y="42" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="15" fill="#98afbf" font-weight="600" letter-spacing="0" text-anchor="middle">本轮结算</text>
+<text x="1402" y="43" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="16" fill="#78dfaf" font-weight="700" letter-spacing="0" text-anchor="end">40,000 Cr</text>
+<text x="30" y="119" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="31" fill="#e9f4fa" font-weight="700" letter-spacing="0" text-anchor="start">太空采矿 · 青岚碎星带</text>
+<text x="31" y="149" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="15" fill="#98afbf" font-weight="400" letter-spacing="0" text-anchor="start">在太空场景中直接操作探测器、采矿设备与货船；右侧仅显示当前目标</text>
+<rect x="0" y="842" width="1440" height="58" rx="0" fill="#10202e" stroke="none" stroke-width="1"/>
+<text x="27" y="877" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="15" fill="#98afbf" font-weight="400" letter-spacing="0" text-anchor="start">下一步：先完成当前页面的关键决策</text>
+<text x="1413" y="877" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="13" fill="#f3b66a" font-weight="400" letter-spacing="0" text-anchor="end">UX V1.0 · 可编辑线框图 / 演示数据</text>
+<rect x="30" y="184" width="982" height="574" rx="9" fill="#081b29" stroke="#2e5267" stroke-width="1"/>
+<rect x="1030" y="184" width="380" height="574" rx="9" fill="#10202e" stroke="#2e5267" stroke-width="1"/>
+<text x="55" y="220" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="16" fill="#58d9eb" font-weight="700" letter-spacing="0" text-anchor="start">动态星域场景  /  从发射坞拖动探测器到天体</text>
+<circle cx="89" cy="294" r="1.4" fill="#e9f4fa" fill-opacity="0.2" stroke="none" stroke-width="1"/>
+<circle cx="262" cy="431" r="0.8" fill="#e9f4fa" fill-opacity="0.32" stroke="none" stroke-width="1"/>
+<circle cx="435" cy="568" r="0.8" fill="#e9f4fa" fill-opacity="0.44" stroke="none" stroke-width="1"/>
+<circle cx="608" cy="270" r="1.4" fill="#e9f4fa" fill-opacity="0.2" stroke="none" stroke-width="1"/>
+<circle cx="781" cy="407" r="0.8" fill="#e9f4fa" fill-opacity="0.32" stroke="none" stroke-width="1"/>
+<circle cx="954" cy="544" r="0.8" fill="#e9f4fa" fill-opacity="0.44" stroke="none" stroke-width="1"/>
+<circle cx="197" cy="681" r="1.4" fill="#e9f4fa" fill-opacity="0.2" stroke="none" stroke-width="1"/>
+<circle cx="370" cy="383" r="0.8" fill="#e9f4fa" fill-opacity="0.32" stroke="none" stroke-width="1"/>
+<circle cx="543" cy="520" r="0.8" fill="#e9f4fa" fill-opacity="0.44" stroke="none" stroke-width="1"/>
+<circle cx="716" cy="657" r="1.4" fill="#e9f4fa" fill-opacity="0.2" stroke="none" stroke-width="1"/>
+<circle cx="889" cy="359" r="0.8" fill="#e9f4fa" fill-opacity="0.32" stroke="none" stroke-width="1"/>
+<circle cx="132" cy="496" r="0.8" fill="#e9f4fa" fill-opacity="0.44" stroke="none" stroke-width="1"/>
+<circle cx="305" cy="633" r="1.4" fill="#e9f4fa" fill-opacity="0.2" stroke="none" stroke-width="1"/>
+<circle cx="478" cy="335" r="0.8" fill="#e9f4fa" fill-opacity="0.32" stroke="none" stroke-width="1"/>
+<circle cx="651" cy="472" r="0.8" fill="#e9f4fa" fill-opacity="0.44" stroke="none" stroke-width="1"/>
+<circle cx="824" cy="609" r="1.4" fill="#e9f4fa" fill-opacity="0.2" stroke="none" stroke-width="1"/>
+<circle cx="67" cy="311" r="0.8" fill="#e9f4fa" fill-opacity="0.32" stroke="none" stroke-width="1"/>
+<circle cx="240" cy="448" r="0.8" fill="#e9f4fa" fill-opacity="0.44" stroke="none" stroke-width="1"/>
+<circle cx="413" cy="585" r="1.4" fill="#e9f4fa" fill-opacity="0.2" stroke="none" stroke-width="1"/>
+<circle cx="586" cy="287" r="0.8" fill="#e9f4fa" fill-opacity="0.32" stroke="none" stroke-width="1"/>
+<circle cx="759" cy="424" r="0.8" fill="#e9f4fa" fill-opacity="0.44" stroke="none" stroke-width="1"/>
+<circle cx="932" cy="561" r="1.4" fill="#e9f4fa" fill-opacity="0.2" stroke="none" stroke-width="1"/>
+<circle cx="175" cy="263" r="0.8" fill="#e9f4fa" fill-opacity="0.32" stroke="none" stroke-width="1"/>
+<circle cx="348" cy="400" r="0.8" fill="#e9f4fa" fill-opacity="0.44" stroke="none" stroke-width="1"/>
+<circle cx="521" cy="537" r="1.4" fill="#e9f4fa" fill-opacity="0.2" stroke="none" stroke-width="1"/>
+<circle cx="694" cy="674" r="0.8" fill="#e9f4fa" fill-opacity="0.32" stroke="none" stroke-width="1"/>
+<circle cx="867" cy="376" r="0.8" fill="#e9f4fa" fill-opacity="0.44" stroke="none" stroke-width="1"/>
+<circle cx="110" cy="513" r="1.4" fill="#e9f4fa" fill-opacity="0.2" stroke="none" stroke-width="1"/>
+<circle cx="283" cy="650" r="0.8" fill="#e9f4fa" fill-opacity="0.32" stroke="none" stroke-width="1"/>
+<circle cx="456" cy="352" r="0.8" fill="#e9f4fa" fill-opacity="0.44" stroke="none" stroke-width="1"/>
+<circle cx="629" cy="489" r="1.4" fill="#e9f4fa" fill-opacity="0.2" stroke="none" stroke-width="1"/>
+<circle cx="802" cy="626" r="0.8" fill="#e9f4fa" fill-opacity="0.32" stroke="none" stroke-width="1"/>
+<circle cx="975" cy="328" r="0.8" fill="#e9f4fa" fill-opacity="0.44" stroke="none" stroke-width="1"/>
+<circle cx="218" cy="465" r="1.4" fill="#e9f4fa" fill-opacity="0.2" stroke="none" stroke-width="1"/>
+<circle cx="391" cy="602" r="0.8" fill="#e9f4fa" fill-opacity="0.32" stroke="none" stroke-width="1"/>
+<circle cx="564" cy="304" r="0.8" fill="#e9f4fa" fill-opacity="0.44" stroke="none" stroke-width="1"/>
+<circle cx="737" cy="441" r="1.4" fill="#e9f4fa" fill-opacity="0.2" stroke="none" stroke-width="1"/>
+<circle cx="910" cy="578" r="0.8" fill="#e9f4fa" fill-opacity="0.32" stroke="none" stroke-width="1"/>
+<circle cx="153" cy="280" r="0.8" fill="#e9f4fa" fill-opacity="0.44" stroke="none" stroke-width="1"/>
+<circle cx="326" cy="417" r="1.4" fill="#e9f4fa" fill-opacity="0.2" stroke="none" stroke-width="1"/>
+<circle cx="499" cy="554" r="0.8" fill="#e9f4fa" fill-opacity="0.32" stroke="none" stroke-width="1"/>
+<circle cx="672" cy="256" r="0.8" fill="#e9f4fa" fill-opacity="0.44" stroke="none" stroke-width="1"/>
+<circle cx="845" cy="393" r="1.4" fill="#e9f4fa" fill-opacity="0.2" stroke="none" stroke-width="1"/>
+<circle cx="88" cy="530" r="0.8" fill="#e9f4fa" fill-opacity="0.32" stroke="none" stroke-width="1"/>
+<circle cx="261" cy="667" r="0.8" fill="#e9f4fa" fill-opacity="0.44" stroke="none" stroke-width="1"/>
+<circle cx="434" cy="369" r="1.4" fill="#e9f4fa" fill-opacity="0.2" stroke="none" stroke-width="1"/>
+<circle cx="607" cy="506" r="0.8" fill="#e9f4fa" fill-opacity="0.32" stroke="none" stroke-width="1"/>
+<circle cx="780" cy="643" r="0.8" fill="#e9f4fa" fill-opacity="0.44" stroke="none" stroke-width="1"/>
+<circle cx="953" cy="345" r="1.4" fill="#e9f4fa" fill-opacity="0.2" stroke="none" stroke-width="1"/>
+<circle cx="196" cy="482" r="0.8" fill="#e9f4fa" fill-opacity="0.32" stroke="none" stroke-width="1"/>
+<circle cx="369" cy="619" r="0.8" fill="#e9f4fa" fill-opacity="0.44" stroke="none" stroke-width="1"/>
+<circle cx="542" cy="321" r="1.4" fill="#e9f4fa" fill-opacity="0.2" stroke="none" stroke-width="1"/>
+<circle cx="715" cy="458" r="0.8" fill="#e9f4fa" fill-opacity="0.32" stroke="none" stroke-width="1"/>
+<circle cx="888" cy="595" r="0.8" fill="#e9f4fa" fill-opacity="0.44" stroke="none" stroke-width="1"/>
+<circle cx="131" cy="297" r="1.4" fill="#e9f4fa" fill-opacity="0.2" stroke="none" stroke-width="1"/>
+<circle cx="304" cy="434" r="0.8" fill="#e9f4fa" fill-opacity="0.32" stroke="none" stroke-width="1"/>
+<circle cx="477" cy="571" r="0.8" fill="#e9f4fa" fill-opacity="0.44" stroke="none" stroke-width="1"/>
+<circle cx="650" cy="273" r="1.4" fill="#e9f4fa" fill-opacity="0.2" stroke="none" stroke-width="1"/>
+<circle cx="823" cy="410" r="0.8" fill="#e9f4fa" fill-opacity="0.32" stroke="none" stroke-width="1"/>
+<circle cx="66" cy="547" r="0.8" fill="#e9f4fa" fill-opacity="0.44" stroke="none" stroke-width="1"/>
+<circle cx="239" cy="249" r="1.4" fill="#e9f4fa" fill-opacity="0.2" stroke="none" stroke-width="1"/>
+<circle cx="412" cy="386" r="0.8" fill="#e9f4fa" fill-opacity="0.32" stroke="none" stroke-width="1"/>
+<circle cx="585" cy="523" r="0.8" fill="#e9f4fa" fill-opacity="0.44" stroke="none" stroke-width="1"/>
+<circle cx="758" cy="660" r="1.4" fill="#e9f4fa" fill-opacity="0.2" stroke="none" stroke-width="1"/>
+<circle cx="931" cy="362" r="0.8" fill="#e9f4fa" fill-opacity="0.32" stroke="none" stroke-width="1"/>
+<circle cx="174" cy="499" r="0.8" fill="#e9f4fa" fill-opacity="0.44" stroke="none" stroke-width="1"/>
+<circle cx="347" cy="636" r="1.4" fill="#e9f4fa" fill-opacity="0.2" stroke="none" stroke-width="1"/>
+<circle cx="520" cy="338" r="0.8" fill="#e9f4fa" fill-opacity="0.32" stroke="none" stroke-width="1"/>
+<circle cx="693" cy="475" r="0.8" fill="#e9f4fa" fill-opacity="0.44" stroke="none" stroke-width="1"/>
+<circle cx="866" cy="612" r="1.4" fill="#e9f4fa" fill-opacity="0.2" stroke="none" stroke-width="1"/>
+<circle cx="109" cy="314" r="0.8" fill="#e9f4fa" fill-opacity="0.32" stroke="none" stroke-width="1"/>
+<circle cx="282" cy="451" r="0.8" fill="#e9f4fa" fill-opacity="0.44" stroke="none" stroke-width="1"/>
+<circle cx="455" cy="588" r="1.4" fill="#e9f4fa" fill-opacity="0.2" stroke="none" stroke-width="1"/>
+<circle cx="628" cy="290" r="0.8" fill="#e9f4fa" fill-opacity="0.32" stroke="none" stroke-width="1"/>
+<circle cx="801" cy="427" r="0.8" fill="#e9f4fa" fill-opacity="0.44" stroke="none" stroke-width="1"/>
+<circle cx="974" cy="564" r="1.4" fill="#e9f4fa" fill-opacity="0.2" stroke="none" stroke-width="1"/>
+<circle cx="217" cy="266" r="0.8" fill="#e9f4fa" fill-opacity="0.32" stroke="none" stroke-width="1"/>
+<circle cx="390" cy="403" r="0.8" fill="#e9f4fa" fill-opacity="0.44" stroke="none" stroke-width="1"/>
+<circle cx="563" cy="540" r="1.4" fill="#e9f4fa" fill-opacity="0.2" stroke="none" stroke-width="1"/>
+<circle cx="736" cy="677" r="0.8" fill="#e9f4fa" fill-opacity="0.32" stroke="none" stroke-width="1"/>
+<line x1="147" y1="651" x2="358" y2="385" stroke="#58d9eb" stroke-width="1" stroke-dasharray="5 6"/>
+<line x1="147" y1="651" x2="730" y2="357" stroke="#58d9eb" stroke-width="1" stroke-dasharray="5 6"/>
+<circle cx="147" cy="651" r="44" fill="#58d9eb" fill-opacity="0.1" stroke="none" stroke-width="1"/>
+<circle cx="147" cy="651" r="24" fill="#397f9e" fill-opacity="1" stroke="none" stroke-width="1"/>
+<text x="147" y="725" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="15" fill="#e9f4fa" font-weight="500" letter-spacing="0" text-anchor="middle">探测器发射坞</text>
+<circle cx="357" cy="380" r="64" fill="#58d9eb" fill-opacity="0.1" stroke="none" stroke-width="1"/>
+<circle cx="357" cy="380" r="48" fill="#344d5d" fill-opacity="1" stroke="none" stroke-width="1"/>
+<circle cx="357" cy="380" r="60" fill="none" fill-opacity="1" stroke="#58d9eb" stroke-width="2"/>
+<text x="357" y="468" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="16" fill="#e9f4fa" font-weight="500" letter-spacing="0" text-anchor="middle">晶硅碎星 A-03</text>
+<circle cx="729" cy="350" r="53" fill="#f3b66a" fill-opacity="0.1" stroke="none" stroke-width="1"/>
+<circle cx="729" cy="350" r="37" fill="#594d49" fill-opacity="1" stroke="none" stroke-width="1"/>
+<circle cx="729" cy="350" r="49" fill="none" fill-opacity="1" stroke="#f3b66a" stroke-width="2"/>
+<text x="729" y="427" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="16" fill="#e9f4fa" font-weight="500" letter-spacing="0" text-anchor="middle">赤曜陨石 B-07</text>
+<circle cx="838" cy="588" r="71" fill="#b89bfa" fill-opacity="0.1" stroke="none" stroke-width="1"/>
+<circle cx="838" cy="588" r="55" fill="#594d49" fill-opacity="1" stroke="none" stroke-width="1"/>
+<circle cx="838" cy="588" r="67" fill="none" fill-opacity="1" stroke="#b89bfa" stroke-width="2"/>
+<text x="838" y="683" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="16" fill="#e9f4fa" font-weight="500" letter-spacing="0" text-anchor="middle">冰质卫星 C-12</text>
+<text x="1054" y="224" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="21" fill="#e9f4fa" font-weight="700" letter-spacing="0" text-anchor="start">目标：晶硅碎星 A-03</text><text x="1054" y="250" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="13" fill="#98afbf" font-weight="400" letter-spacing="0" text-anchor="start">选择天体后刷新详情</text>
+<line x1="1054" y1="277" x2="1388" y2="277" stroke="#2e5267" stroke-width="1" stroke-dasharray=""/>
+<text x="1055" y="316" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="17" fill="#98afbf" font-weight="400" letter-spacing="0" text-anchor="start">扫描：未完成</text>
+<text x="1055" y="354" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="17" fill="#98afbf" font-weight="400" letter-spacing="0" text-anchor="start">采矿舱：未部署</text>
+<text x="1055" y="394" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="17" fill="#98afbf" font-weight="400" letter-spacing="0" text-anchor="start">矿区库存：0 t</text>
+<rect x="1054" y="457" width="329" height="42" rx="6" fill="#58d9eb" stroke="#58d9eb" stroke-width="1"/><text x="1218.5" y="485" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="15" fill="#07111b" font-weight="700" letter-spacing="0" text-anchor="middle">1  发射探测器  ·  500 Cr</text>
+<rect x="1054" y="515" width="329" height="42" rx="6" fill="#173243" stroke="#2e5267" stroke-width="1"/><text x="1218.5" y="543" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="15" fill="#e9f4fa" font-weight="700" letter-spacing="0" text-anchor="middle">2  部署采矿舱</text>
+<rect x="1054" y="573" width="329" height="42" rx="6" fill="#173243" stroke="#2e5267" stroke-width="1"/><text x="1218.5" y="601" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="15" fill="#e9f4fa" font-weight="700" letter-spacing="0" text-anchor="middle">3  发射运输火箭</text>
+<text x="1055" y="678" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="14" fill="#f3b66a" font-weight="400" letter-spacing="0" text-anchor="start">火箭：可回收轻型  /  点击修改</text>
+<text x="1055" y="717" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="13" fill="#98afbf" font-weight="400" letter-spacing="0" text-anchor="start">操作反馈只出现在所选对象附近</text>
+</svg>

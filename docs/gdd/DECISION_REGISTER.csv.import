@@ -1,0 +1,19 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://d4v1tnfshcik"
+
+[deps]
+
+files=["res://docs/gdd/DECISION_REGISTER.问题.translation", "res://docs/gdd/DECISION_REGISTER.当前默认方案.translation", "res://docs/gdd/DECISION_REGISTER.验证方法.translation", "res://docs/gdd/DECISION_REGISTER.状态.translation"]
+
+source_file="res://docs/gdd/DECISION_REGISTER.csv"
+dest_files=["res://docs/gdd/DECISION_REGISTER.问题.translation", "res://docs/gdd/DECISION_REGISTER.当前默认方案.translation", "res://docs/gdd/DECISION_REGISTER.验证方法.translation", "res://docs/gdd/DECISION_REGISTER.状态.translation"]
+
+[params]
+
+compress=1
+delimiter=0
+unescape_keys=false
+unescape_translations=true
