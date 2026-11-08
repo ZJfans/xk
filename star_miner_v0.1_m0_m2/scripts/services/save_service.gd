@@ -2,9 +2,9 @@ class_name SaveService
 extends RefCounted
 
 ## 正式档在 user://。测试把 folder 指到别的目录，避免碰玩家存档。
-## v3.0 旗舰版新增：
-## 1. 跨航季永久生涯档案 (career_profile.json)：永久保存【8大航天科技树】、【地球星舰母港股权%】、【火星阿瑞斯星城殖民阶段 (1~5)】！
-## 2. 三槽位独立存档管理 (slot_1 / slot_2 / slot_3)：支持多档位随时保存与读取。
+## V4.0 破晓星域存档管理（第 19 章）：
+## 1. 一致快照写入临时文件 -> 校验 -> 轮换备份上一份有效存档 -> 原子替换当前存档。
+## 2. 三槽位独立存档管理 (slot_1 / slot_2 / slot_3)：直接展示破晓星域当前矿区、游戏日、可支配现金与研究进度。
 static var folder := "user://"
 
 static func save_game(state: GameState) -> Dictionary:
@@ -55,6 +55,16 @@ static func slot_summary(slot_idx: int) -> String:
 	if not (raw is Dictionary):
 		return "槽位 #%d：[无法读取]" % s_id
 	var d: Dictionary = raw
+	var stats_d: Dictionary = d.get("stats", {})
+	if stats_d.has("v40") and (stats_d["v40"] is Dictionary):
+		var v40: Dictionary = stats_d["v40"]
+		var day_v40: float = float(v40.get("game_day", 0.0))
+		var cash_v40: int = int(v40.get("cash_cr", 30000))
+		var res_v40: int = int(v40.get("reserved_cash_cr", 0))
+		var tech_cnt: int = (v40.get("research", {}).get("unlocked", []) as Array).size()
+		return "槽位 #%d：破晓星域 · Day %.1f · 可支配 %d Cr (冻结 %d Cr) · 研究 %d/20" % [
+			s_id, day_v40, maxi(0, cash_v40 - res_v40), res_v40, tech_cnt
+		]
 	var sc: String = str(d.get("scenario_id", "A"))
 	var day_v: float = float(int(d.get("current_tick", 0))) / 2.0
 	var cash_v: int = int(d.get("cash_cents", 0)) / 100

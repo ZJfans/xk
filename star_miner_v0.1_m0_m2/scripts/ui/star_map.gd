@@ -479,16 +479,26 @@ func _draw_routes(layout: Dictionary) -> void:
 
 func _draw_telemetry_trajectory(origin: Vector2, target: Vector2, col: Color, emphasized: bool) -> void:
 	var steps: int = 40
-	var shift: float = fmod(float(Time.get_ticks_msec()) / 1000.0, 1.0)
+	var now_s: float = float(Time.get_ticks_msec()) / 1000.0
+	var shift: float = fmod(now_s, 1.0)
 	for i in range(steps):
 		var t0: float = float(i) / float(steps)
 		var t1: float = float(i + 1) / float(steps)
-		var dash_on: bool = fmod(t0 * 12.0 - shift * 2.0 + 12.0, 1.0) < 0.42
+		var dash_on: bool = fmod(t0 * 12.0 - shift * 2.0 + 12.0, 1.0) < 0.48
 		if dash_on:
 			var p0: Vector2 = route_point(origin, target, t0)
 			var p1: Vector2 = route_point(origin, target, t1)
-			var alpha: float = 0.38 if emphasized else 0.18
-			draw_line(p0, p1, _fade(col, alpha), 1.4 if emphasized else 1.0, true)
+			var alpha: float = 0.48 if emphasized else 0.22
+			draw_line(p0, p1, _fade(col, alpha), 1.8 if emphasized else 1.1, true)
+	# 2.5D 航线动态能量脉冲光点与中点航程刻度环
+	for p_idx in range(3 if emphasized else 1):
+		var u_pulse: float = fmod(now_s * 0.32 + float(p_idx) * 0.33, 1.0)
+		var pt_pulse: Vector2 = route_point(origin, target, u_pulse)
+		draw_circle(pt_pulse, 3.8 if emphasized else 2.6, _fade(col, 0.85))
+		draw_circle(pt_pulse, 1.8, Color.WHITE)
+	if emphasized:
+		var mid_pt: Vector2 = route_point(origin, target, 0.5)
+		draw_arc(mid_pt, 7.0, 0.0, TAU, 20, _fade(col, 0.55), 1.2, true)
 
 
 func _draw_base_overlays(layout: Dictionary) -> void:
@@ -512,7 +522,7 @@ func _draw_hangar_overlay(anchor: Vector2, unit: float) -> void:
 		if slot >= 2:
 			break
 	var idle: int = _ships_in("idle").size()
-	var label_txt: String = "星舰巨湾 (%d)" % idle if idle > 0 else "星舰巨湾"
+	var label_txt: String = "星舰巨湾 (%d)" % idle if idle > 0 else "晨曦总装湾"
 	_draw_facility_badge(anchor + Vector2(0, 20), label_txt, CYAN if idle > 0 else MUTED, hovered_item == "facility:hangar")
 
 
@@ -545,7 +555,7 @@ func _draw_trade_overlay(anchor: Vector2, unit: float) -> void:
 	var mars_stage: int = int(state.stats.get("tycoon", {}).get("mars_stage", 0))
 	if mars_stage > 0:
 		_draw_text(anchor + Vector2(-42, -82) * unit, "🪐火星星城 Lv.%d" % mars_stage, 10, GOLD)
-	_draw_facility_badge(anchor + Vector2(0, 20), "火星交易所", GOLD if active else MUTED, hovered_item == "facility:trade")
+	_draw_facility_badge(anchor + Vector2(0, 20), "晨曦合约厅", GOLD if active else MUTED, hovered_item == "facility:trade")
 
 
 func _draw_pad_overlay(anchor: Vector2, unit: float, show_rocket: bool) -> void:
@@ -615,8 +625,9 @@ func _draw_targets(layout: Dictionary) -> void:
 		# 仅在选中或悬停时呈现极细精密轨道环，让未选中星球纯粹悬浮于深邃天鹅绒宇宙中
 
 		if selected:
-			draw_arc(target, p_rad + 8.0, 0, TAU, 48, GOLD, 1.8, true)
-			draw_arc(target, p_rad + 13.0, now_sec * 0.6, now_sec * 0.6 + PI * 1.4, 32, _fade(GOLD, 0.45), 1.0, true)
+			draw_arc(target, p_rad + 7.0, PI * 0.68, PI * 1.32, 24, CYAN, 2.2, true)
+			draw_arc(target, p_rad + 7.0, -PI * 0.32, PI * 0.32, 24, CYAN, 2.2, true)
+			draw_arc(target, p_rad + 13.0, now_sec * 0.6, now_sec * 0.6 + PI * 1.4, 32, _fade(GOLD, 0.65), 1.4, true)
 		elif is_hovered:
 			draw_arc(target, p_rad + 7.0, 0, TAU, 40, CYAN, 1.4, true)
 		elif str(star["environment"]) == "high_g":
@@ -807,7 +818,21 @@ func _draw_floating_texts(layout: Dictionary) -> void:
 
 
 func _draw_caption() -> void:
-	_draw_text(Vector2(16, 22), "EARTH STARBASE BOCA  //  地球博卡星舰基地", 13, _fade(INK, 0.72))
+	_draw_text(Vector2(16, 22), "DAWN SECTOR  //  破晓星域五大星团航网 · 晨曦贸易港 & 赤曜深空港", 13, _fade(GOLD, 0.90))
+	if state != null and state.stats.has("v40"):
+		var v40: Dictionary = state.stats["v40"]
+		var ships_arr: Array = v40.get("ships", [])
+		var pool_str: String = "共享船池:开启" if bool(v40.get("shared_fleet_pool", false)) else "固定航线分船"
+		var lane_str: String = "正常通行" if str(v40.get("lane_policy", "normal")) == "normal" else ("备用绕行保速" if str(v40["lane_policy"]) == "detour" else "检修期囤仓")
+		var hud_box := Rect2(16, 30, minf(520.0, size.x - 32.0), 22)
+		draw_rect(hud_box, Color(0.04, 0.09, 0.15, 0.80))
+		draw_rect(Rect2(hud_box.position, Vector2(3, hud_box.size.y)), CYAN)
+		var w_mode: String = str(v40.get("launch_window_mode", "standard"))
+		var w_tag: String = "☀顺风(-8%运费)" if w_mode == "optimal" else ("⛅标准" if w_mode == "standard" else "⚡快航(-15%周期)")
+		_draw_text(hud_box.position + Vector2(8, 15), "🚀 船队 %d 艘(%s) | 🕒 窗口:%s | 🛣 航道:%s | ⚓ %s" % [
+			ships_arr.size(), pool_str, w_tag, lane_str,
+			"晨曦贸易港" if str(v40.get("active_port_id", "dawn_port")) == "dawn_port" else "赤曜深空港"
+		], 11, CYAN, hud_box.size.x - 14.0)
 	if not state.active_event.is_empty():
 		var ev_title: String = str(state.active_event.get("title", "深空天象"))
 		var rem_ticks: int = maxi(0, int(state.active_event.get("end_tick", 0)) - state.current_tick)
@@ -843,6 +868,16 @@ func _draw_caption() -> void:
 func _hover_description(key: String) -> String:
 	if key.begins_with("star:"):
 		var sid: String = key.substr(5)
+		if state != null and state.stats.has("v40"):
+			var v40_d: Dictionary = state.stats["v40"]
+			var act_id: String = str(v40_d.get("active_mine_id", "dawn_1"))
+			var m_d: Dictionary = v40_d.get("mines", {}).get(act_id, {})
+			if not m_d.is_empty():
+				return "【%s · %s】距离 %.1fL · 重力 %.1fG · 地表矿仓 %d/%d t · 点击切换矿区并查看 96×48 地质剖面" % [
+					str(m_d.get("cluster_name_zh", "晨曦边境")), str(m_d.get("name_zh", sid)),
+					float(m_d.get("distance_l", 0.5)), float(m_d.get("gravity_g", 1.0)),
+					int(m_d.get("silo_stock_t", 0)), int(m_d.get("silo_capacity_t", 300))
+				]
 		if state.stars.has(sid):
 			var s: Dictionary = state.stars[sid]
 			var ore_n: String = "赤铁钛合金矿" if str(s["ore"]) == "metal" else "高能暗物质晶簇"

@@ -6,10 +6,10 @@ const LaunchView = preload("res://scripts/ui/launch_recovery_view.gd")
 
 ## 《星矿大亨 Rocket Prospectors》V4.0 · 严格遵循第 3.2 & 16.2 章标准界面布局：
 ## - 顶栏：公司现金、冻结金额入口、游戏时间、速度 + 三大主界面统一导航（1.矿场 / 2.星图 / 3.集团总览）
-## - 左侧 (156px)：扫描、钻井、采掘头、主井/平台扩容、仓储与矿区运行/暂停/封存工具栏
+## - 左侧 (158px)：扫描、钻井、采掘头、采掘头迁移(500Cr)、主井/平台扩容、仓储与矿区运行/暂停/封存/共享船池工具栏
 ## - 中央 (约 66% 可用面积)：96×48 逻辑格二维矿场剖面 / 破晓星域星图 / 集团总览大面板
-## - 右侧 (312px)：当前主要瓶颈与下一班运输、火箭起降实况窗、三船型采购调配与晨曦港销售/合同交付
-## - 底部 (48px)：实际产量、矿仓占用、预计运输能力与已知矿体剩余可采寿命（含 15日/5日预警）
+## - 右侧 (314px)：当前主要瓶颈与下一班运输、火箭起降实况窗、三船型采购调配与晨曦港销售策略/合同交付
+## - 底部 (46px)：实际产量、矿仓占用、预计运输能力与已知矿体剩余可采寿命（含 15日/5日预警）
 
 static func mount(ui: Control) -> void:
 	var old_background: Node = ui.get_child(0)
@@ -52,9 +52,13 @@ static func mount(ui: Control) -> void:
 	row.add_child(tab_map)
 	ui.v10_tab_map_btn = tab_map
 
-	var tab_corp: Button = ui._button("🏢 3.集团总览(研究/合同/财务)", ui._switch_v10_screen.bind("corp"), 30)
+	var tab_corp: Button = ui._button("🏢 3.集团总览(研究/合同/精炼)", ui._switch_v10_screen.bind("corp"), 30)
 	row.add_child(tab_corp)
 	ui.v10_tab_launch_btn = tab_corp
+
+	var tab_astra: Button = ui._button("🚀 4.发射与回收(Astra)", ui._switch_v10_screen.bind("astra_hud"), 30)
+	row.add_child(tab_astra)
+	ui.v40_tab_astra_btn = tab_astra
 
 	ui.day_label.reparent(row)
 	ui.day_label.add_theme_font_size_override("font_size", 15)
@@ -82,7 +86,7 @@ static func mount(ui: Control) -> void:
 	ui.tutorial_button.reparent(hint_row)
 
 	# =========================================================================
-	# 2. 左侧工具栏 (158px 宽，第 16.2 节：扫描、钻井、采掘头、仓储等当前工具)
+	# 2. 左侧工具栏 (158px 宽，第 16.2 节：扫描、钻井、采掘头、迁移、仓储等当前工具)
 	# =========================================================================
 	var left_dock: PanelContainer = PanelContainer.new()
 	board.add_child(left_dock)
@@ -110,18 +114,24 @@ static func mount(ui: Control) -> void:
 	ui.v10_zone_selector_box = zone_switch_col
 
 	left_vbox.add_child(ui._label("🛠 矿场建设工具", 12, Color("49d6e4")))
-	left_vbox.add_child(ui._button("📡 地面扫描(300Cr)", ui._v40_cmd.bind("ScanArea", {}), 28))
-	left_vbox.add_child(ui._button("🏗 建钻井台(8000)", ui._v40_cmd.bind("BuildDrill", {}), 28))
-	left_vbox.add_child(ui._button("⛏ 装采掘头(2000+)", ui._v10_drill_next_shallow_pocket, 28))
-	left_vbox.add_child(ui._button("⬆ 平台改造(9000)", ui._v40_cmd.bind("UpgradeFacility", {"kind": "platform"}), 28))
-	left_vbox.add_child(ui._button("⬆ 主井扩容(120t)", ui._v40_cmd.bind("UpgradeFacility", {"kind": "bore"}), 28))
-	left_vbox.add_child(ui._button("📦 矿仓扩容(6000)", ui._v40_cmd.bind("UpgradeFacility", {"kind": "silo"}), 28))
+	left_vbox.add_child(ui._button("📡 地面扫描(300Cr)", ui._v40_cmd.bind("ScanArea", {}), 27))
+	left_vbox.add_child(ui._button("🏗 建钻井台(8000)", ui._v40_cmd.bind("BuildDrill", {}), 27))
+	left_vbox.add_child(ui._button("⛏ 装采掘头(2000+)", ui._v10_drill_next_shallow_pocket, 27))
+	left_vbox.add_child(ui._button("🔀 迁移采掘头(500)", ui._v40_cmd.bind("RelocateMiningHead", {}), 26))
+	left_vbox.add_child(ui._button("📐 路线(绕行/直穿)", ui._v40_cmd.bind("ToggleBoreRouteMode", {}), 26))
+	left_vbox.add_child(ui._button("↩ 撤单退款(100%)", ui._v40_cmd.bind("CancelLastOrder", {}), 26))
+	left_vbox.add_child(ui._button("⬆ 平台改造(9000)", ui._v40_cmd.bind("UpgradeFacility", {"kind": "platform"}), 27))
+	left_vbox.add_child(ui._button("⬆ 主井扩容(120t)", ui._v40_cmd.bind("UpgradeFacility", {"kind": "bore"}), 27))
+	left_vbox.add_child(ui._button("📦 矿仓扩容(6000)", ui._v40_cmd.bind("UpgradeFacility", {"kind": "silo"}), 27))
 
 	left_vbox.add_child(ui._label("⚙ 运营状态与回收", 12, Color("83c7a6")))
-	left_vbox.add_child(ui._button("▶ 正常生产", ui._v40_cmd.bind("SetMineStatus", {"status": "running"}), 26))
-	left_vbox.add_child(ui._button("⏸ 暂停(25%维护)", ui._v40_cmd.bind("SetMineStatus", {"status": "paused"}), 26))
-	left_vbox.add_child(ui._button("🔒 封存(15Cr/日)", ui._v40_cmd.bind("SetMineStatus", {"status": "mothballed"}), 26))
-	left_vbox.add_child(ui._button("♻ 拆售采掘头(60%)", ui._v40_cmd.bind("SellEquipment", {}), 26))
+	left_vbox.add_child(ui._button("▶ 正常生产", ui._v40_cmd.bind("SetMineStatus", {"status": "running"}), 25))
+	left_vbox.add_child(ui._button("⏸ 暂停(25%维护)", ui._v40_cmd.bind("SetMineStatus", {"status": "paused"}), 25))
+	left_vbox.add_child(ui._button("🔒 封存(15Cr/日)", ui._v40_cmd.bind("SetMineStatus", {"status": "mothballed"}), 25))
+	left_vbox.add_child(ui._button("♻ 拆售采掘头(60%)", ui._v40_cmd.bind("SellEquipment", {}), 25))
+	left_vbox.add_child(ui._button("🌐 共享船池开关", ui._v40_cmd.bind("ToggleSharedFleetPool", {}), 24))
+	left_vbox.add_child(ui._button("📋 存地表预设", ui._v40_cmd.bind("SaveSurfacePreset", {}), 24))
+	left_vbox.add_child(ui._button("⚡ 应用地表预设", ui._v40_cmd.bind("ApplySurfacePreset", {}), 24))
 
 	# 隐藏旧版已归并按钮，保持引用有效
 	ui.scan_button.visible = false
@@ -203,7 +213,7 @@ static func mount(ui: Control) -> void:
 	cluster_vbox.add_child(cluster_cards_row)
 	ui.v40_cluster_cards_box = cluster_cards_row
 
-	# 视图 3：集团总览大面板 (第 3.2, 9, 10, 12, 15.6 章：合同、20项研究、位置化库存、三口径财务与终局工程)
+	# 视图 3：集团总览大面板 (第 3.2, 9, 10, 12, 14, 15.6 章：合同、20项研究、单步精炼、星港投资、三口径财务与终局工程)
 	var corp_panel: PanelContainer = PanelContainer.new()
 	corp_panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	corp_panel.add_theme_stylebox_override("panel", ui._style(Color("09131e"), Color("28445c"), 6, 10))
@@ -242,9 +252,20 @@ static func mount(ui: Control) -> void:
 	side_scroll.add_child(body)
 
 	body.add_child(ui._label("🎬 起降与运输实况 (2.5D 演出层)", 12, Color("49d6e4")))
+	var astra_full: Control = LaunchView.new()
+	astra_full.set("compact_mode", false)
+	astra_full.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	astra_full.visible = false
+	astra_full.trigger_quick_dispatch.connect(ui._smart_dispatch_now)
+	astra_full.trigger_ship_overhaul.connect(ui._on_astra_overhaul_ship)
+	astra_full.trigger_launch_window_cycle.connect(ui._on_astra_cycle_launch_window)
+	main_stage.add_child(astra_full)
+	ui.v40_astra_hud_view = astra_full
+
 	var mini_launch: Control = LaunchView.new()
 	mini_launch.set("compact_mode", true)
-	mini_launch.custom_minimum_size = Vector2(292, 128)
+	mini_launch.custom_minimum_size = Vector2(292, 148)
+	mini_launch.request_fullscreen_hud.connect(ui._switch_v10_screen.bind("astra_hud"))
 	body.add_child(mini_launch)
 	ui.v10_mini_launch_view = mini_launch
 
@@ -268,7 +289,7 @@ static func mount(ui: Control) -> void:
 	var trade_vbox: VBoxContainer = VBoxContainer.new()
 	trade_vbox.add_theme_constant_override("separation", 4)
 	trade_card.add_child(trade_vbox)
-	trade_vbox.add_child(ui._label("📈 晨曦港需求与销售 (常规600t/高价100t)", 12, Color("83c7a6")))
+	trade_vbox.add_child(ui._label("📈 晨曦港需求与销售策略 (常规600t/高价100t)", 12, Color("83c7a6")))
 	ui.v10_market_status_label = ui._label("", 11, Color("9adce8"))
 	ui.v10_market_status_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	trade_vbox.add_child(ui.v10_market_status_label)
@@ -303,6 +324,7 @@ static func mount(ui: Control) -> void:
 	navigation.add_child(ui._button("🔨 商业矿区竞拍", ui._open_auction_hall, 32))
 	navigation.add_child(ui._button("💳 授信借贷(+10000Cr)", ui._v40_cmd.bind("BorrowLoan", {"amount_cr": 10000}), 32))
 	navigation.add_child(ui._button("还款(-10000Cr)", ui._v40_cmd.bind("RepayLoan", {"amount_cr": 10000}), 32))
+	navigation.add_child(ui._button("💾 存档/设置", ui._open_menu_tab.bind(3), 32))
 	navigation.add_child(ui._button("🏠 主菜单", ui._show_front_menu_again, 32))
 	ui.speed_label.reparent(navigation)
 

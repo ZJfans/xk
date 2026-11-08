@@ -45,6 +45,8 @@ var v40_cluster_cards_box: HBoxContainer
 var v40_corp_box: VBoxContainer
 var v40_market_buttons_box: VBoxContainer
 var v40_bottom_telemetry_label: Label
+var v40_tab_astra_btn: Button
+var v40_astra_hud_view: Control
 var nav_buttons: Dictionary = {}
 var dev_full_access: bool = true
 
@@ -183,6 +185,17 @@ func _unhandled_key_input(event: InputEvent) -> void:
 		KEY_3:
 			_set_speed(4)
 			get_viewport().set_input_as_handled()
+		KEY_4, KEY_F:
+			_switch_v10_screen("astra_hud" if v10_active_screen != "astra_hud" else "mining")
+			get_viewport().set_input_as_handled()
+		KEY_R:
+			_v40_cmd("ToggleBoreRouteMode", {})
+			get_viewport().set_input_as_handled()
+		KEY_TAB:
+			var order_scr: Array = ["mining", "starmap", "corp", "astra_hud"]
+			var cur_i: int = maxi(0, order_scr.find(v10_active_screen))
+			_switch_v10_screen(str(order_scr[(cur_i + 1) % order_scr.size()]))
+			get_viewport().set_input_as_handled()
 		KEY_ESCAPE:
 			if board_window != null and board_window.visible:
 				_close_board_panel()
@@ -242,6 +255,7 @@ func _style(fill: Color, border: Color, radius: int = 6, margin: int = 8) -> Sty
 	box.bg_color = fill
 	box.border_color = border
 	box.set_border_width_all(1)
+	box.border_width_top = 2
 	box.set_corner_radius_all(radius)
 	box.content_margin_left = margin
 	box.content_margin_right = margin
@@ -703,8 +717,14 @@ func _dev_reveal_all_stars() -> void:
 
 
 func _on_cross_section_action(action_id: String) -> void:
+	if action_id == "v40_launch_pad":
+		_v40_cmd("LaunchPadDispatch", {})
+		return
 	if action_id == "v40_scan":
 		_v40_cmd("ScanArea", {})
+		return
+	if action_id == "v40_route_mode":
+		_v40_cmd("ToggleBoreRouteMode", {})
 		return
 	if action_id == "v40_build_drill":
 		_v40_cmd("BuildDrill", {})
@@ -1405,7 +1425,11 @@ func _launch() -> void:
 
 func _advance() -> void:
 	var result: Dictionary = Sim.advance_tick(state)
-	V40.step_v40_simulation(state, 0.5)
+	var v40_step: Dictionary = V40.step_v40_simulation(state, 0.5)
+	if bool(v40_step.get("auto_pause", false)) and state.auto_pause:
+		speed = 0
+		accumulated = 0.0
+		status_text = "【现金严重短缺保护】已为您自动暂停一次：请出售港口库存、封存高耗矿区、拆售设备或申请授信借款！"
 	var v10_rep: Dictionary = Tycoon.tick_v10_economy(state)
 	if str(v10_rep.get("ai_dump_msg", "")) != "":
 		status_text = str(v10_rep["ai_dump_msg"])
@@ -1748,7 +1772,7 @@ func _on_sound(pressed: bool) -> void:
 
 
 func _dismiss_tutorial() -> void:
-	state.tutorial_dismissed = true
+	V40.execute_command(state, "ToggleFamiliarMode", {})
 	_persist()
 	_refresh_all()
 
@@ -1826,7 +1850,26 @@ func _show_settlement(saved_result: Dictionary = {}) -> void:
 	for r_i in range(rank_entries.size()):
 		rank_lines.append("第 %d 名：%s  （净利润 %s）" % [r_i + 1, str(rank_entries[r_i]["name"]), Rules.money(int(rank_entries[r_i]["net"]))])
 
+	var v40_rep: Dictionary = V40.ensure_v40_state(state)
+	var v40_fin: Dictionary = V40.financial_summary(v40_rep)
+	var v40_rivals: Dictionary = v40_rep.get("rivals", {})
+	var v40_ranks: Array[Dictionary] = [
+		{"name": "★ 您的破晓星域矿业集团", "nw": int(v40_fin.get("estimated_net_worth_cr", 60000))},
+		{"name": "🔴 赤曜矿业", "nw": int(v40_rivals.get("crimson_mining", {}).get("net_worth_cr", 68000))},
+		{"name": "🔵 星环运输", "nw": int(v40_rivals.get("starring_transit", {}).get("net_worth_cr", 72000))},
+		{"name": "🟠 银穹资本", "nw": int(v40_rivals.get("silver_dome", {}).get("net_worth_cr", 75000))}
+	]
+	v40_ranks.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return int(a["nw"]) > int(b["nw"]))
+	var v40_rank_strs := PackedStringArray()
+	for idx_r in range(v40_ranks.size()):
+		v40_rank_strs.append("#%d %s (%d Cr)" % [idx_r + 1, str(v40_ranks[idx_r]["name"]), int(v40_ranks[idx_r]["nw"])])
+
 	var lines := PackedStringArray([
+		"🏛 【V4.0 破晓星域 30 日集团财报 · 三口径账本汇总】",
+		"• 可支配现金：%d Cr  （总现金 %d Cr | 冻结保证金 %d Cr）" % [int(v40_fin["available_cash_cr"]), int(v40_fin["cash_cr"]), int(v40_fin["reserved_cash_cr"])],
+		"• 经营结余 (Operating Surplus)：%d Cr   |   • 估计净资产 (Net Worth)：%d Cr" % [int(v40_fin["operating_surplus_cr"]), int(v40_fin["estimated_net_worth_cr"])],
+		"• 破晓星域四大矿业财团净资产排名：" + "  |  ".join(v40_rank_strs),
+		"",
 		"★ 赛季综合评级：" + grade_str + "  （" + str(perk_info["name_zh"]) + "）",
 		"📊 【V1.0 四大核心经营诊断指标】",
 		"• 矿区投资回报率 (ROI)：%d%%   |   • 矿产开采率：%d%%" % [roi_pct, extraction_rate],
@@ -2001,13 +2044,14 @@ func _show_front_menu(saved_game: Dictionary) -> void:
 	front_menu.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	front_menu.add_theme_stylebox_override("panel", _style(Color("060d15"), Color("2a4a55"), 0, 0))
 	add_child(front_menu)
-	if CONCEPT_BG != null:
+	var menu_bg_tex: Texture2D = load("res://assets/custom/bg_launch_sunset_clean.png") if ResourceLoader.exists("res://assets/custom/bg_launch_sunset_clean.png") else CONCEPT_BG
+	if menu_bg_tex != null:
 		var bg_tex := TextureRect.new()
-		bg_tex.texture = CONCEPT_BG
+		bg_tex.texture = menu_bg_tex
 		bg_tex.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		bg_tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 		bg_tex.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-		bg_tex.modulate = Color(0.28, 0.36, 0.44, 0.88)
+		bg_tex.modulate = Color(0.42, 0.50, 0.58, 0.90)
 		front_menu.add_child(bg_tex)
 	var scroll := ScrollContainer.new()
 	scroll.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -2044,12 +2088,19 @@ func _show_front_menu(saved_game: Dictionary) -> void:
 	var career_data: Dictionary = Save.read_career() if not test_mode else {}
 	var ach_summary: String = "🏆 成就 %d/%d  ·  🔬 生涯科技 %d/8  ·  🪐 火星星城 Lv.%d/5  ·  🏛 股权 %d%%" % [SteamService.unlocked_count(), SteamService.total_count(), (career_data.get("unlocked_techs", []) as Array).size(), int(career_data.get("mars_stage", 0)), int(career_data.get("player_shares", 5))]
 	title_row.add_child(_label(ach_summary, 14, GREEN))
-	hero_box.add_child(_paragraph("地球博卡湾星舰基地  ·  筷子巨臂回收塔与近地轨道加注站  ·  三靶点定向激光剖面钻探  ·  电弧精炼与火星阿瑞斯星城殖民大工程！", 13, MUTED))
+	hero_box.add_child(_paragraph("破晓星域五大星团  ·  晨曦贸易港与赤曜深空港  ·  96×48 逻辑格树形井道与半径4格局部采掘  ·  三船型共享船池、单步精炼与二十项总部研究！", 13, MUTED))
 
 	if saved_game.get("ok", false):
 		var saved: GameState = saved_game["state"]
-		var continue_button: Button = _button("▶ 继续上次进行中的航季  ·  %s  ·  Day %.1f" % [_map_title(saved.scenario_id), float(saved.current_tick) / 2.0], _continue_saved.bind(saved), 44)
-		continue_button.add_theme_stylebox_override("normal", _style(Color("1e4236"), GREEN, 6))
+		var cont_txt: String = "▶ 继续上次进行中的航季  ·  %s  ·  Day %.1f" % [_map_title(saved.scenario_id), float(saved.current_tick) / 2.0]
+		if saved.stats.has("v40") and (saved.stats["v40"] is Dictionary):
+			var sv40: Dictionary = saved.stats["v40"]
+			var sfin: Dictionary = V40.financial_summary(sv40)
+			cont_txt = "🚀 继续破晓星域集团存档  ·  Day %.1f  ·  可支配 %d Cr  ·  估计净资产 %d Cr" % [
+				float(sv40.get("game_day", 0.0)), int(sfin.get("available_cash_cr", 30000)), int(sfin.get("estimated_net_worth_cr", 60000))
+			]
+		var continue_button: Button = _button(cont_txt, _continue_saved.bind(saved), 46)
+		continue_button.add_theme_stylebox_override("normal", _style(Color("c47f16"), Color("ffd27a"), 6))
 		hero_box.add_child(continue_button)
 	elif not test_mode and Save.has_save():
 		hero_box.add_child(_paragraph(status_text, 14, RED))
@@ -2225,7 +2276,16 @@ func _refresh_turmoil_quick_bar() -> void:
 	day_label.text = "Day %.1f" % float(v40.get("game_day", 0.0))
 
 	if is_instance_valid(tutorial_label):
-		tutorial_label.text = "🔔 " + str(bneck.get("bottleneck_text", status_text))
+		var guide: Dictionary = V40.get_contextual_guidance(v40)
+		var top_note: String = "【%s】%s  |  💡 %s" % [
+			str(guide.get("title_zh", "经营引导")),
+			str(guide.get("hint_zh", "")),
+			str(bneck.get("bottleneck_text", status_text))
+		]
+		tutorial_label.text = top_note
+	if is_instance_valid(tutorial_button):
+		tutorial_button.visible = true
+		tutorial_button.text = "标准引导" if bool(v40.get("familiar_player_mode", false)) else "我熟悉经营游戏" 
 
 	if is_instance_valid(board_title) and not active_mine.is_empty():
 		board_title.text = "%s · %s (%s)" % [
@@ -2235,7 +2295,8 @@ func _refresh_turmoil_quick_bar() -> void:
 		var s_cap: int = maxi(1, int(active_mine.get("silo_capacity_t", 300)))
 		board_stock.max_value = float(s_cap)
 		board_stock.value = float(s_stock)
-		board_inventory.text = "地表矿仓 %d / %d t  |  在役运矿船 %d 艘" % [s_stock, s_cap, (v40["ships"] as Array).size()]
+		var pool_str: String = " [共享船池:开]" if bool(v40.get("shared_fleet_pool", false)) else ""
+		board_inventory.text = "地表矿仓 %d / %d t  |  在役运矿船 %d 艘%s" % [s_stock, s_cap, (v40["ships"] as Array).size(), pool_str]
 
 	# 2. 更新底部遥测栏 (第 16.2 节：实际产量、矿仓占用、预计运输能力与矿体寿命)
 	if is_instance_valid(v40_bottom_telemetry_label) and not active_mine.is_empty():
@@ -2263,6 +2324,8 @@ func _refresh_turmoil_quick_bar() -> void:
 		v10_tab_map_btn.add_theme_stylebox_override("normal", _style(Color("1e4236") if v10_active_screen == "starmap" else Color("182836"), GREEN if v10_active_screen == "starmap" else EDGE, 5, 8))
 	if is_instance_valid(v10_tab_launch_btn):
 		v10_tab_launch_btn.add_theme_stylebox_override("normal", _style(Color("1e4236") if v10_active_screen == "corp" else Color("182836"), GREEN if v10_active_screen == "corp" else EDGE, 5, 8))
+	if is_instance_valid(v40_tab_astra_btn):
+		v40_tab_astra_btn.add_theme_stylebox_override("normal", _style(Color("123854") if v10_active_screen == "astra_hud" else Color("182836"), CYAN if v10_active_screen == "astra_hud" else EDGE, 5, 8))
 
 	# 4. 更新左侧矿区切换栏
 	if is_instance_valid(v10_zone_selector_box):
@@ -2286,86 +2349,157 @@ func _refresh_turmoil_quick_bar() -> void:
 		var ref_p: int = int(m_cfg.get("base_price_cr", 100))
 		var var_c: int = int(m_cfg.get("mining_var_cost_cr", 8))
 
+		var ship_tex_map: Dictionary = {
+			"falcon_light": "res://assets/custom/rocket_light.png",
+			"peregrine_med": "res://assets/custom/rocket_reuse.png",
+			"leviathan_heavy": "res://assets/custom/rocket_heavy.png"
+		}
 		for stype in ["falcon_light", "peregrine_med", "leviathan_heavy"]:
-			var met: Dictionary = V40.calc_ship_route_metrics(stype, dist_l, grav_g, ref_p, var_c)
+			var met: Dictionary = V40.calc_ship_route_metrics(stype, dist_l, grav_g, ref_p, var_c, v40)
+			var s_card: PanelContainer = PanelContainer.new()
+			s_card.add_theme_stylebox_override("panel", _style(Color("0b1826"), GOLD if stype == "peregrine_med" else Color("2b4a66"), 5, 5))
+			v10_rockets_box.add_child(s_card)
+			var s_hbox: HBoxContainer = HBoxContainer.new()
+			s_hbox.add_theme_constant_override("separation", 6)
+			s_card.add_child(s_hbox)
+			var tex_path: String = str(ship_tex_map.get(stype, ""))
+			if ResourceLoader.exists(tex_path):
+				var s_icon := TextureRect.new()
+				s_icon.texture = load(tex_path)
+				s_icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+				s_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+				s_icon.custom_minimum_size = Vector2(28, 48)
+				s_hbox.add_child(s_icon)
 			var s_row: VBoxContainer = VBoxContainer.new()
+			s_row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			s_row.add_theme_constant_override("separation", 1)
-			v10_rockets_box.add_child(s_row)
-			s_row.add_child(_label("%s (载重 %dt · 周期 %.1f日)" % [str(met["name_zh"]), int(met["capacity_t"]), float(met["cycle_days"])], 11, GOLD if stype == "peregrine_med" else INK))
-			s_row.add_child(_label("单趟费 %dCr (%.1fCr/t) | 船日贡献 %dCr/日" % [
+			s_hbox.add_child(s_row)
+			s_row.add_child(_label("%s (%dt · %.1f日)" % [str(met["name_zh"]), int(met["capacity_t"]), float(met["cycle_days"])], 11, GOLD if stype == "peregrine_med" else INK))
+			s_row.add_child(_label("单趟%dCr(%.1f/t) | 贡献%dCr/船日" % [
 				int(met["trip_cost_cr"]), float(met["cost_per_tonne_cr"]), int(met["ship_day_contribution_cr"])
 			], 10, MUTED))
-			var buy_s_btn: Button = _button("➕ 采购并部署 (%d Cr)" % int(met["price_cr"]), _v40_cmd.bind("PurchaseShip", {"ship_type_id": stype, "mine_id": active_m_id}), 26)
+			var buy_s_btn: Button = _button("🚀 采购部署 (%d Cr)" % int(met["price_cr"]), _v40_cmd.bind("PurchaseShip", {"ship_type_id": stype, "mine_id": active_m_id}), 24)
+			if stype == "peregrine_med":
+				buy_s_btn.add_theme_stylebox_override("normal", _style(Color("4a3514"), GOLD, 4, 4))
 			s_row.add_child(buy_s_btn)
 
-	# 6. 更新右侧晨曦港四矿物双买方报价与一键出售面板 (第 9.2–9.4 节)
+	# 6. 更新右侧晨曦港四矿物双买方报价、销售策略切换与一键出售面板 (第 9.2–9.4 节)
 	if is_instance_valid(v40_market_buttons_box):
 		_clear(v40_market_buttons_box)
 		var mkt: Dictionary = v40["market"]
 		var min_defs: Dictionary = V40.get_config().get("minerals", {})
 		if is_instance_valid(v10_market_status_label):
-			v10_market_status_label.text = "晨曦港租用仓: %d/%d t (囤货费 0.5 Cr/t/日)" % [port_used, int(pinv_dawn.get("capacity_t", 500))]
+			var fee_r: float = 0.25 if ("C2" in (v40["research"]["unlocked"] as Array)) else 0.50
+			v10_market_status_label.text = "晨曦港租用仓: %d/%d t (囤货费 %.2f Cr/t/日)" % [port_used, int(pinv_dawn.get("capacity_t", 500)), fee_r]
+		var pol_short: Dictionary = {"direct": "直售", "target": "目标价", "priority": "优先合同"}
 		for min_id in ["iron_titanium", "silicon_crystal", "energy_crystal", "phase_ore"]:
 			var mdef: Dictionary = min_defs.get(min_id, {})
 			var p_stock: int = int(pinv_dawn["minerals"].get(min_id, 0))
+			var base_p: float = float(mdef.get("base_price_cr", 100))
+			var ref_now: float = float(mkt["reference_prices"].get(min_id, base_p))
+			var trend_tag: String = "▲" if ref_now > base_p * 1.02 else ("▼" if ref_now < base_p * 0.98 else "━")
 			var reg_p: int = int(mkt["regular_quotes"].get(min_id, 95))
 			var spot_p: int = int(mkt["spot_quotes"].get(min_id, 110))
-			var reg_q: int = int(mkt["regular_quotas_left"].get(min_id, 600))
 			var spot_q: int = int(mkt["spot_quotas_left"].get(min_id, 100))
+			var spot_max: int = maxi(1, int(mdef.get("daily_spot_quota_t", 100)))
+			var cur_pol: String = str(pinv_dawn["sale_policy"].get(min_id, "direct"))
+			var m_icon: String = str(mdef.get("icon", "•"))
+			var m_col: Color = Color(str(mdef.get("color", "e5edf1")))
+
+			var m_card_p: PanelContainer = PanelContainer.new()
+			m_card_p.add_theme_stylebox_override("panel", _style(Color("0b1724"), m_col if p_stock > 0 else Color("223a4e"), 4, 4))
+			v40_market_buttons_box.add_child(m_card_p)
+			var m_vbox: VBoxContainer = VBoxContainer.new()
+			m_vbox.add_theme_constant_override("separation", 2)
+			m_card_p.add_child(m_vbox)
 
 			var m_row: HBoxContainer = HBoxContainer.new()
-			m_row.add_theme_constant_override("separation", 4)
-			v40_market_buttons_box.add_child(m_row)
-			var m_lbl: Label = _label("%s %dt | 常规%d(%dt) 高价%d(%dt)" % [
-				str(mdef.get("name_zh", min_id)), p_stock, reg_p, reg_q, spot_p, spot_q
-			], 10, INK)
+			m_row.add_theme_constant_override("separation", 3)
+			m_vbox.add_child(m_row)
+			var m_lbl: Label = _label("%s%s %dt | %s常%d 高%d(%dt)" % [
+				m_icon, str(mdef.get("name_zh", min_id)), p_stock, trend_tag, reg_p, spot_p, spot_q
+			], 10, m_col if p_stock > 0 else INK)
 			m_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			m_row.add_child(m_lbl)
-			var sell_b: Button = _button("出售", _v40_cmd.bind("SellMineralNow", {"port_id": "dawn_port", "mineral_id": min_id, "buyer_type": "best"}), 24)
+			var pol_b: Button = _button(str(pol_short.get(cur_pol, "直售")), _v40_cmd.bind("SetSalePolicy", {"port_id": "dawn_port", "mineral_id": min_id}), 22)
+			m_row.add_child(pol_b)
+			var sell_b: Button = _button("出售", _v40_cmd.bind("SellMineralNow", {"port_id": "dawn_port", "mineral_id": min_id, "buyer_type": "best"}), 22)
 			m_row.add_child(sell_b)
 
-		var upg_port_b: Button = _button("🏭 扩建晨曦港租用仓 (+500t · 6000Cr)", _v40_cmd.bind("UpgradeFacility", {"kind": "port_warehouse"}), 26)
-		v40_market_buttons_box.add_child(upg_port_b)
+			var q_bar: ProgressBar = ProgressBar.new()
+			q_bar.custom_minimum_size.y = 4
+			q_bar.max_value = float(spot_max)
+			q_bar.value = clampf(float(spot_q), 0.0, float(spot_max))
+			q_bar.show_percentage = false
+			q_bar.add_theme_stylebox_override("background", _style(Color("050c14"), Color("162838"), 2, 0))
+			q_bar.add_theme_stylebox_override("fill", _style(m_col, m_col, 2, 0))
+			m_vbox.add_child(q_bar)
 
-	# 7. 更新视图 2：破晓星域五大星团勘探与许可卡片
+		var emg_on: bool = bool(v40.get("emergency_sale_authorized", false))
+		var emg_b: Button = _button("🚨 应急自动出售授权: %s" % ("已开启" if emg_on else "已关闭"), _v40_cmd.bind("ToggleEmergencySale", {}), 24)
+		v40_market_buttons_box.add_child(emg_b)
+		var upg_port_b: Button = _button("🏭 扩建晨曦港租用仓 (+500t · 6000Cr)", _v40_cmd.bind("UpgradeFacility", {"kind": "port_warehouse"}), 24)
+		v40_market_buttons_box.add_child(upg_port_b)
+		var port_row_b: HBoxContainer = HBoxContainer.new()
+		port_row_b.add_theme_constant_override("separation", 4)
+		v40_market_buttons_box.add_child(port_row_b)
+		var cur_pid: String = str(v40.get("active_port_id", "dawn_port"))
+		var port_sw_b: Button = _button("⚓ 港口:%s" % ("晨曦港" if cur_pid == "dawn_port" else "赤曜港"), _v40_cmd.bind("SwitchActivePort", {}), 24)
+		port_sw_b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		port_row_b.add_child(port_sw_b)
+		var hub_tr_b: Button = _button("🔄 中转干线联运", _v40_cmd.bind("TransferViaHub", {}), 24)
+		hub_tr_b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		port_row_b.add_child(hub_tr_b)
+
+	# 7. 更新视图 2：破晓星域五大星团勘探、第 10.4 节项目投资对比与第 4.5 节商业竞拍卡片
 	if is_instance_valid(v40_cluster_cards_box) and v10_active_screen == "starmap":
 		_clear(v40_cluster_cards_box)
 		for mid in v40["mines"]:
 			var m_card_data: Dictionary = v40["mines"][mid]
+			var cmp: Dictionary = V40.calc_expansion_comparison(v40, str(mid))
 			var c_panel: PanelContainer = PanelContainer.new()
 			c_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			c_panel.add_theme_stylebox_override("panel", _style(Color("0e1b28"), GOLD if bool(m_card_data.get("license_owned", false)) else EDGE, 5, 6))
 			v40_cluster_cards_box.add_child(c_panel)
 			var cv: VBoxContainer = VBoxContainer.new()
-			cv.add_theme_constant_override("separation", 3)
+			cv.add_theme_constant_override("separation", 2)
 			c_panel.add_child(cv)
-			cv.add_child(_label("%s
-[%s]" % [str(m_card_data["name_zh"]), str(m_card_data["cluster_name_zh"])], 11, GOLD))
-			cv.add_child(_label("预计 %d–%d t
-可信度: %s
-航程 L=%.1f" % [
+			cv.add_child(_label("%s [%s]" % [str(m_card_data["name_zh"]), str(m_card_data["cluster_name_zh"])], 11, GOLD))
+			cv.add_child(_label("储量 %d–%dt (%s) | L=%.1f\n起步需 %dCr | 回本≈%.1f日\n改派损 -%.0ft/日" % [
 				int(m_card_data["estimate_min_t"]), int(m_card_data["estimate_max_t"]),
-				str(m_card_data["confidence_zh"]), float(m_card_data["distance_l"])
-			], 10, MUTED))
+				str(m_card_data["confidence_zh"]), float(m_card_data["distance_l"]),
+				int(cmp.get("initial_cash_needed_cr", 10800)), float(cmp.get("static_payback_days", 5.0)),
+				float(cmp.get("reassignment_loss_t_day", 50.0))
+			], 9, MUTED))
 			if bool(m_card_data.get("license_owned", false)):
-				cv.add_child(_button("⛏ 进入矿场", _v40_enter_mine.bind(str(mid)), 26))
+				cv.add_child(_button("⛏ 进入矿场", _v40_enter_mine.bind(str(mid)), 24))
 			else:
 				if int(m_card_data.get("survey_stage", 1)) < 2:
-					cv.add_child(_button("🛰 轨道勘探(享10日排他期)", _v40_cmd.bind("OrbitalSurvey", {"mine_id": str(mid)}), 24))
-				cv.add_child(_button("📜 取得许可(%dCr)" % int(m_card_data["license_price_cr"]), _v40_cmd.bind("AcquireLicense", {"mine_id": str(mid)}), 26))
+					cv.add_child(_button("🛰 轨道勘探(10日排他)", _v40_cmd.bind("OrbitalSurvey", {"mine_id": str(mid)}), 22))
+				if str(m_card_data.get("license_type", "open")) == "commercial":
+					var cur_b: int = int(m_card_data.get("current_bid_cr", m_card_data.get("license_price_cr", 9500)))
+					var auto_b: int = int(m_card_data.get("max_auto_bid_cr", 0))
+					cv.add_child(_button("✋ 出价冻结(%dCr)" % (cur_b + 1000), _v40_cmd.bind("PlaceBid", {"mine_id": str(mid), "bid_cr": cur_b + 1000}), 22))
+					cv.add_child(_button("⚙ 自动上限:%s" % ("关" if auto_b <= 0 else "%dCr" % auto_b), _v40_cmd.bind("SetAutoBidLimit", {"mine_id": str(mid)}), 22))
+					cv.add_child(_button("🔨 竞拍落槌结算", _v40_cmd.bind("SettleCommercialAuction", {"mine_id": str(mid)}), 22))
+				else:
+					cv.add_child(_button("📜 取得许可(%dCr)" % int(m_card_data["license_price_cr"]), _v40_cmd.bind("AcquireLicense", {"mine_id": str(mid)}), 24))
 
-	# 8. 更新视图 3：集团总览大面板 (三口径财务、合同保证金、20项研究树、终局工程)
+	# 8. 更新视图 3：集团总览大面板 (三口径财务、合同可行性、单步精炼、星港投资、20项研究、竞争财团与三大终局路线)
 	if is_instance_valid(v40_corp_box) and v10_active_screen == "corp":
 		_refresh_v40_corporate_overview(v40, fin)
 
 	if is_instance_valid(v10_mini_launch_view):
 		v10_mini_launch_view.set("state", state)
 		v10_mini_launch_view.queue_redraw()
+	if is_instance_valid(v40_astra_hud_view):
+		v40_astra_hud_view.set("state", state)
+		v40_astra_hud_view.queue_redraw()
 
 
 func _refresh_v40_corporate_overview(v40: Dictionary, fin: Dictionary) -> void:
 	_clear(v40_corp_box)
-	v40_corp_box.add_child(_label("🏢 破晓星域矿业集团总览（财务三口径 · 位置化库存 · 10%保证金合同 · 20项研究 · 终局工程）", 17, GOLD))
+	v40_corp_box.add_child(_label("🏢 破晓星域矿业集团总览（财务三口径 · 合同可行性与取消 · 单步精炼与星港扩建 · 20项研究 · 三大终局路线）", 16, GOLD))
 
 	# A. 三种财务口径与债务重整保护 (第 10 章)
 	var fin_card: PanelContainer = PanelContainer.new()
@@ -2384,43 +2518,253 @@ func _refresh_v40_corporate_overview(v40: Dictionary, fin: Dictionary) -> void:
 	var fin_btn_row: HBoxContainer = HBoxContainer.new()
 	fin_btn_row.add_theme_constant_override("separation", 8)
 	fin_vbox.add_child(fin_btn_row)
-	fin_btn_row.add_child(_button("💳 抵押授信借款 (+10,000 Cr)", _v40_cmd.bind("BorrowLoan", {"amount_cr": 10000}), 28))
-	fin_btn_row.add_child(_button("💵 偿还贷款本息 (-10,000 Cr)", _v40_cmd.bind("RepayLoan", {"amount_cr": 10000}), 28))
-	fin_btn_row.add_child(_button("⚖ 主动债务重整 (保留已探明世界情报)", _v40_cmd.bind("RestructureDebt", {}), 28))
+	fin_btn_row.add_child(_button("💳 抵押授信借款 (+10,000 Cr)", _v40_cmd.bind("BorrowLoan", {"amount_cr": 10000}), 26))
+	fin_btn_row.add_child(_button("💵 偿还贷款本息 (-10,000 Cr)", _v40_cmd.bind("RepayLoan", {"amount_cr": 10000}), 26))
+	fin_btn_row.add_child(_button("⚖ 主动债务重整 (保留已探明世界情报)", _v40_cmd.bind("RestructureDebt", {}), 26))
+	fin_btn_row.add_child(_button("📊 查看30日集团财报与排行", _show_settlement.bind({}), 26))
+	var v40_chart: Control = Chart.new(v40.get("cash_history_cr", [30000, int(fin["available_cash_cr"])]), 30000, v40.get("net_worth_history_cr", [60000, int(fin["estimated_net_worth_cr"])]), true)
+	fin_vbox.add_child(v40_chart)
 
-	# B. 合同系统 (第 9.6 & 9.7 节：10% 保证金冻结与固定价交付)
+	# A2. 位置化库存分布与预留锁控台 (第 5.3, 5.5, 11.4 节：矿区仓 / 在途船舱 / 晨曦港 / 赤曜港，可用+预留=总库存不重算)
+	var inv_card: PanelContainer = PanelContainer.new()
+	inv_card.add_theme_stylebox_override("panel", _style(Color("0b1926"), Color("49d6e4"), 6, 8))
+	v40_corp_box.add_child(inv_card)
+	var inv_vbox: VBoxContainer = VBoxContainer.new()
+	inv_vbox.add_theme_constant_override("separation", 4)
+	inv_card.add_child(inv_vbox)
+	inv_vbox.add_child(_label("📦 位置化库存分布与预留锁控台（第 5.3 & 5.5 节：展开全部所在地 · 预留货物不被默认现货出售）", 13, CYAN))
+	var breakdown: Dictionary = V40.get_location_inventory_breakdown(v40)
+	for mid_inv in ["iron_titanium", "silicon_crystal", "energy_crystal", "phase_ore"]:
+		var binfo: Dictionary = breakdown.get(mid_inv, {})
+		var i_row: HBoxContainer = HBoxContainer.new()
+		i_row.add_theme_constant_override("separation", 6)
+		inv_vbox.add_child(i_row)
+		var m_col_i: Color = Color(str(binfo.get("color", "e5edf1")))
+		var i_txt: String = "%s%s  物理总计: %d t   |   矿区地表仓: %d t   |   在途船舱: %d t   |   晨曦港: %d t (可用 %d / 预留 %d t)   |   赤曜港: %d t" % [
+			str(binfo.get("icon", "•")), str(binfo.get("name_zh", mid_inv)),
+			int(binfo.get("physical_total_t", 0)), int(binfo.get("mine_silos_t", 0)), int(binfo.get("in_transit_t", 0)),
+			int(binfo.get("dawn_total_t", 0)), int(binfo.get("dawn_free_t", 0)), int(binfo.get("dawn_reserved_t", 0)),
+			int(binfo.get("crimson_total_t", 0))
+		]
+		var ilbl: Label = _label(i_txt, 11, m_col_i if int(binfo.get("physical_total_t", 0)) > 0 else INK)
+		ilbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		i_row.add_child(ilbl)
+		i_row.add_child(_button("🔒预留+50t", _v40_cmd.bind("ReserveInventory", {"port_id": "dawn_port", "mineral_id": mid_inv, "delta_t": 50}), 23))
+		i_row.add_child(_button("🔓释放-50t", _v40_cmd.bind("ReserveInventory", {"port_id": "dawn_port", "mineral_id": mid_inv, "delta_t": -50}), 23))
+
+	# B. 合同系统与接单辅助/主动取消 (第 9.6–9.8 节)
 	var cnt_card: PanelContainer = PanelContainer.new()
 	cnt_card.add_theme_stylebox_override("panel", _style(Color("101e2b"), GOLD, 6, 8))
 	v40_corp_box.add_child(cnt_card)
 	var cnt_vbox: VBoxContainer = VBoxContainer.new()
 	cnt_vbox.add_theme_constant_override("separation", 4)
 	cnt_card.add_child(cnt_vbox)
-	cnt_vbox.add_child(_label("📜 商业供货合同（接单冻结 10% 保证金 · 完整交付释放保证金 · 到期未交扣 10% 罚金）", 13, GOLD))
+	cnt_vbox.add_child(_label("📜 商业供货合同（接单冻结 10% 保证金 · 保守交付可行性预测 · 主动取消扣未交部分 10% 罚金）", 13, GOLD))
+	var min_cfg_cnt: Dictionary = V40.get_config().get("minerals", {})
+	var state_zh_map: Dictionary = {"available": "🟡待承接", "active": "🟢履约中", "completed": "✅已完成", "cancelled": "⚪已取消", "defaulted": "🔴已违约"}
 	for c in v40["contracts"]:
+		var feas: Dictionary = V40.calc_contract_feasibility(v40, c)
+		var c_min_id: String = str(c.get("mineral_id", "iron_titanium"))
+		var c_mdef: Dictionary = min_cfg_cnt.get(c_min_id, {})
+		var c_min_zh: String = "%s%s" % [str(c_mdef.get("icon", "•")), str(c_mdef.get("name_zh", c_min_id))]
+		var c_state: String = str(c.get("state", "available"))
+		var risk_lv: String = str(feas.get("risk_level", "safe"))
+		var risk_col: Color = GREEN if (c_state == "completed" or risk_lv == "safe") else (GOLD if risk_lv == "tight" else RED)
+		var risk_tag: String = "产能充足" if risk_lv == "safe" else ("排期偏紧" if risk_lv == "tight" else "预计缺口 %dt" % int(feas["shortfall_t"]))
+
+		var c_item_panel: PanelContainer = PanelContainer.new()
+		c_item_panel.add_theme_stylebox_override("panel", _style(Color("0b1824"), risk_col if c_state == "active" else Color("254058"), 5, 6))
+		cnt_vbox.add_child(c_item_panel)
+		var c_item_vbox: VBoxContainer = VBoxContainer.new()
+		c_item_vbox.add_theme_constant_override("separation", 3)
+		c_item_panel.add_child(c_item_vbox)
+
 		var crow: HBoxContainer = HBoxContainer.new()
-		crow.add_theme_constant_override("separation", 8)
-		cnt_vbox.add_child(crow)
-		var c_txt: String = "【%s】需 %s %d t (已交 %d t) | 固定价 %d Cr/t | 截止 Day %.0f | 保证金 %d Cr | 状态: %s" % [
-			str(c["issuer"]), str(c["mineral_id"]), int(c["target_t"]), int(c["delivered_t"]),
-			int(c["fixed_price_cr"]), float(c["due_day"]), int(c["deposit_cr"]), str(c["state"])
+		crow.add_theme_constant_override("separation", 6)
+		c_item_vbox.add_child(crow)
+		var c_txt: String = "【%s】%s  %d / %d t  |  固定单价 %d Cr/t  |  截止 Day %.0f (最晚发船 D%.0f · %s)  |  保证金 %d Cr  |  %s" % [
+			str(c["issuer"]), c_min_zh, int(c["delivered_t"]), int(c["target_t"]),
+			int(c["fixed_price_cr"]), float(c["due_day"]), float(feas["latest_dispatch_day"]), risk_tag, int(c["deposit_cr"]),
+			str(state_zh_map.get(c_state, c_state))
 		]
-		var clbl: Label = _label(c_txt, 11, GREEN if str(c["state"]) == "completed" else INK)
+		var clbl: Label = _label(c_txt, 11, GREEN if c_state == "completed" else INK)
 		clbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		crow.add_child(clbl)
-		if str(c["state"]) == "available":
-			crow.add_child(_button("承接合同(冻结%dCr)" % int(c["deposit_cr"]), _v40_cmd.bind("AcceptContract", {"contract_id": str(c["id"])}), 26))
-		elif str(c["state"]) == "active":
-			crow.add_child(_button("立即划拨交付", _v40_cmd.bind("DeliverContract", {"contract_id": str(c["id"])}), 26))
+		if c_state == "available":
+			crow.add_child(_button("✍ 承接(冻%dCr)" % int(c["deposit_cr"]), _v40_cmd.bind("AcceptContract", {"contract_id": str(c["id"])}), 25))
+		elif c_state == "active":
+			crow.add_child(_button("🚚 划拨交付", _v40_cmd.bind("DeliverContract", {"contract_id": str(c["id"])}), 25))
+			crow.add_child(_button("✕ 取消合同", _v40_cmd.bind("CancelContract", {"contract_id": str(c["id"])}), 25))
 
-	# C. 二十项主要研究 (第 12.2 节：E1–E5 勘探 / M1–M5 采矿 / L1–L5 物流 / C1–C5 商业)
+		var c_prog: ProgressBar = ProgressBar.new()
+		c_prog.custom_minimum_size.y = 6
+		c_prog.max_value = float(maxi(1, int(c["target_t"])))
+		c_prog.value = clampf(float(int(c["delivered_t"])), 0.0, c_prog.max_value)
+		c_prog.show_percentage = false
+		c_prog.add_theme_stylebox_override("background", _style(Color("060d14"), Color("1b3044"), 2, 0))
+		c_prog.add_theme_stylebox_override("fill", _style(risk_col, risk_col, 2, 0))
+		c_item_vbox.add_child(c_prog)
+
+	# C. 单步骤精炼与晨曦星港扩建投资 (第 14.1 & 14.2 节)
+	var ref_card: PanelContainer = PanelContainer.new()
+	ref_card.add_theme_stylebox_override("panel", _style(Color("0f1d28"), GREEN, 6, 8))
+	v40_corp_box.add_child(ref_card)
+	var ref_vbox: VBoxContainer = VBoxContainer.new()
+	ref_vbox.add_theme_constant_override("separation", 5)
+	ref_card.add_child(ref_vbox)
+	var sp_lv: int = int(v40.get("starport_expansion_level", 0))
+	var dawn_p_inv: Dictionary = v40.get("port_inventories", {}).get("dawn_port", {})
+	var mkt_ref: Dictionary = v40.get("market", {})
+	var ref_quotas: Dictionary = mkt_ref.get("refined_quotas_left", {"alloy_ingot": 150, "pure_wafer": 60})
+	var fe_free_t: int = maxi(0, int(dawn_p_inv.get("minerals", {}).get("iron_titanium", 0)) - int(dawn_p_inv.get("reserved", {}).get("iron_titanium", 0)))
+	var si_free_t: int = maxi(0, int(dawn_p_inv.get("minerals", {}).get("silicon_crystal", 0)) - int(dawn_p_inv.get("reserved", {}).get("silicon_crystal", 0)))
+	var alloy_q_left: int = int(ref_quotas.get("alloy_ingot", 150))
+	var wafer_q_left: int = int(ref_quotas.get("pure_wafer", 60))
+	var disc_pct: float = float(dawn_p_inv.get("fee_discount_ratio", 0.0)) * 100.0
+	ref_vbox.add_child(_label("⚙ 单步骤精炼与星港扩建（第 14 章 · 晨曦港第 %d/3 期：仓容 %dt | 泊位 %d | 运费减免 -%.0f%%）" % [
+		sp_lv, int(dawn_p_inv.get("capacity_t", 500)), int(dawn_p_inv.get("berths", 2)), disc_pct
+	], 13, GREEN))
+
+	var ref_cards_row: HBoxContainer = HBoxContainer.new()
+	ref_cards_row.add_theme_constant_override("separation", 8)
+	ref_vbox.add_child(ref_cards_row)
+
+	var ref_items: Array = [
+		["alloy_ingot", "🔥 合金锭精炼线", "2t 铁钛矿 → 1t 合金锭 (处理费20Cr · 售价260Cr/t · 等效120Cr/t原矿)", "港内可用铁钛矿: %d t  |  今日剩余高价配额: %d / 150 t" % [fe_free_t, alloy_q_left], alloy_q_left, 150, Color("f0a04a"), 20],
+		["pure_wafer", "💎 高纯晶片精炼线", "3t 晶硅矿 → 1t 高纯晶片 (处理费60Cr · 售价650Cr/t · 等效196.7Cr/t原矿)", "港内可用晶硅矿: %d t  |  今日剩余高价配额: %d / 60 t" % [si_free_t, wafer_q_left], wafer_q_left, 60, CYAN, 15],
+		["starport", "🏗 晨曦星港扩建工程", "每期 +600t 港仓容量、+1 装卸泊位、干线运费 -8% (共 3 期)", "当前扩建阶段: 第 %d / 3 期  |  下期投资: %s" % [sp_lv, "已满级" if sp_lv >= 3 else "%d Cr" % (18000 + sp_lv * 8000)], sp_lv, 3, GOLD, 0]
+	]
+	for r_it in ref_items:
+		var rc_p: PanelContainer = PanelContainer.new()
+		rc_p.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		rc_p.add_theme_stylebox_override("panel", _style(Color("0a1622"), r_it[6], 5, 6))
+		ref_cards_row.add_child(rc_p)
+		var rc_v: VBoxContainer = VBoxContainer.new()
+		rc_v.add_theme_constant_override("separation", 3)
+		rc_p.add_child(rc_v)
+		rc_v.add_child(_label(str(r_it[1]), 12, r_it[6]))
+		rc_v.add_child(_label(str(r_it[2]), 10, INK))
+		rc_v.add_child(_label(str(r_it[3]), 10, MUTED))
+		var rp_bar: ProgressBar = ProgressBar.new()
+		rp_bar.custom_minimum_size.y = 6
+		rp_bar.max_value = float(maxi(1, int(r_it[5])))
+		rp_bar.value = clampf(float(int(r_it[4])), 0.0, rp_bar.max_value)
+		rp_bar.show_percentage = false
+		rp_bar.add_theme_stylebox_override("background", _style(Color("050b12"), Color("182c3e"), 2, 0))
+		rp_bar.add_theme_stylebox_override("fill", _style(r_it[6], r_it[6], 2, 0))
+		rc_v.add_child(rp_bar)
+		if str(r_it[0]) == "starport":
+			var sp_b: Button = _button("✓ 已完成全部3期扩建" if sp_lv >= 3 else "🏗 投资扩建下一期", _v40_cmd.bind("InvestStarport", {}), 25)
+			sp_b.disabled = (sp_lv >= 3)
+			rc_v.add_child(sp_b)
+		else:
+			rc_v.add_child(_button("⚡ 立即精炼并出售 (%d批)" % int(r_it[7]), _v40_cmd.bind("StartRefining", {"recipe_id": str(r_it[0]), "batches": int(r_it[7])}), 25))
+
+	# D. 三大竞争财团动态与三大终局路线 (第 13 & 15.6 节)
+	var eg_card: PanelContainer = PanelContainer.new()
+	eg_card.add_theme_stylebox_override("panel", _style(Color("111b27"), GOLD, 6, 8))
+	v40_corp_box.add_child(eg_card)
+	var eg_vbox: VBoxContainer = VBoxContainer.new()
+	eg_vbox.add_theme_constant_override("separation", 4)
+	eg_card.add_child(eg_vbox)
+	var eg: Dictionary = v40["endgame"]
+	var achieved_str: String = "、".join(eg.get("achieved_routes", [])) if not (eg.get("achieved_routes", []) as Array).is_empty() else "进行中"
+	eg_vbox.add_child(_label("🏆 三大终局目标与竞争财团周报（已达成路线: %s）" % achieved_str, 13, GOLD))
+	var rivals: Dictionary = v40.get("rivals", {})
+	for rk in rivals:
+		var rv: Dictionary = rivals[rk]
+		eg_vbox.add_child(_label("• [%s] 现金 %d Cr | 库存 %d t | 在役船 %d 艘 — %s" % [
+			str(rv["name_zh"]), int(rv["cash_cr"]), int(rv["inventory_t"]), int(rv["ships"]), str(rv["last_news"])
+		], 11, MUTED))
+	var eg_routes_cfg: Array = [
+		["tycoon", "👑 商业霸主旗舰供货", int(eg["flagship_delivered_t"]), int(eg["flagship_target_t"]), "t", GOLD],
+		["pioneer", "🔭 深空先驱观测工程", int(eg["deep_observatory_stage"]), 3, "阶段", CYAN],
+		["industrial", "🌐 星际工业干线工程", int(eg.get("industrial_delivered_t", 0)), int(eg.get("industrial_target_t", 2000)), "t", GREEN]
+	]
+	var eg_btn_row: HBoxContainer = HBoxContainer.new()
+	eg_btn_row.add_theme_constant_override("separation", 8)
+	eg_vbox.add_child(eg_btn_row)
+	for er in eg_routes_cfg:
+		var er_col: VBoxContainer = VBoxContainer.new()
+		er_col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		er_col.add_theme_constant_override("separation", 3)
+		eg_btn_row.add_child(er_col)
+		var pbar: ProgressBar = ProgressBar.new()
+		pbar.custom_minimum_size.y = 8
+		pbar.show_percentage = false
+		pbar.max_value = float(maxi(1, int(er[3])))
+		pbar.value = float(int(er[2]))
+		pbar.add_theme_stylebox_override("fill", _style(er[5], er[5], 2, 0))
+		er_col.add_child(pbar)
+		er_col.add_child(_button("%s (%d/%d%s)" % [str(er[1]), int(er[2]), int(er[3]), str(er[4])], _v40_cmd.bind("DeliverEndgame", {"route_id": str(er[0])}), 26))
+
+	# D2. 特殊发现与商业预告事件决策台 (第 4.3, 8.9, 15.5 节：同一发现仅可兑现一次，含提前预告期)
+	var ev_card: PanelContainer = PanelContainer.new()
+	ev_card.add_theme_stylebox_override("panel", _style(Color("121b28"), Color("b888f8"), 6, 8))
+	v40_corp_box.add_child(ev_card)
+	var ev_vbox: VBoxContainer = VBoxContainer.new()
+	ev_vbox.add_theme_constant_override("separation", 4)
+	ev_card.add_child(ev_vbox)
+	ev_vbox.add_child(_label("⚡ 特殊发现与预告型商业事件（第 15.5 节：负面事件提前预告 · 特殊遗迹单次兑现保护）", 13, Color("b888f8")))
+	for ev in v40.get("special_events", []):
+		var ev_row: HBoxContainer = HBoxContainer.new()
+		ev_row.add_theme_constant_override("separation", 6)
+		ev_vbox.add_child(ev_row)
+		var is_red: bool = bool(ev.get("redeemed", false))
+		var st_tag: String = "✓已处置" if is_red else ("预告剩余%.1f日" % float(ev.get("notice_days", 0.0)) if str(ev.get("state", "")) == "forewarned" else "待决策")
+		var ev_lbl: Label = _label("【%s (%s)】%s" % [str(ev["title_zh"]), st_tag, str(ev["desc_zh"])], 10, GREEN if is_red else INK)
+		ev_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		ev_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		ev_row.add_child(ev_lbl)
+		if not is_red:
+			ev_row.add_child(_button(str(ev["opt_a_label"]), _v40_cmd.bind("ResolveSpecialEvent", {"event_id": str(ev["id"]), "choice": str(ev["opt_a_id"])}), 25))
+			ev_row.add_child(_button(str(ev["opt_b_label"]), _v40_cmd.bind("ResolveSpecialEvent", {"event_id": str(ev["id"]), "choice": str(ev["opt_b_id"])}), 25))
+
+	# E. 二十项主要研究 (第 12.2 节：E1–E5 勘探 / M1–M5 采矿 / L1–L5 物流 / C1–C5 商业)
 	var res_card: PanelContainer = PanelContainer.new()
 	res_card.add_theme_stylebox_override("panel", _style(Color("0d1a26"), Color("49d6e4"), 6, 8))
 	v40_corp_box.add_child(res_card)
 	var res_vbox: VBoxContainer = VBoxContainer.new()
-	res_vbox.add_theme_constant_override("separation", 4)
+	res_vbox.add_theme_constant_override("separation", 5)
 	res_card.add_child(res_vbox)
 	var unlocked: Array = v40["research"]["unlocked"]
-	res_vbox.add_child(_label("🔬 总部二十项主要研究 (已突破 %d / 20 · 四大专精分支 E/M/L/C)" % unlocked.size(), 13, CYAN))
+	var res_paused: bool = bool(v40["research"].get("paused", false))
+
+	var res_top_row: HBoxContainer = HBoxContainer.new()
+	res_top_row.add_theme_constant_override("separation", 8)
+	res_vbox.add_child(res_top_row)
+	var res_title_lbl: Label = _label("🔬 总部二十项主要研究 (已突破 %d / 20 · 四大专精分支 E/M/L/C · 无循环样本锁)" % unlocked.size(), 13, CYAN)
+	res_title_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	res_top_row.add_child(res_title_lbl)
+	res_top_row.add_child(_button("▶ 恢复研究槽位" if res_paused else "⏸ 暂停研究槽位", _v40_cmd.bind("ToggleResearchPause", {}), 24))
+
+	var branch_colors: Dictionary = {"勘探": CYAN, "采矿": Color("f0a04a"), "物流": GOLD, "商业": Color("b888f8")}
+	var branch_counts: Dictionary = {"勘探": 0, "采矿": 0, "物流": 0, "商业": 0}
+	var all_rnodes: Array = V40.get_config().get("research_20", [])
+	for rn_c in all_rnodes:
+		if str(rn_c["id"]) in unlocked:
+			var bn_k: String = str(rn_c.get("branch", "勘探"))
+			branch_counts[bn_k] = int(branch_counts.get(bn_k, 0)) + 1
+
+	var branch_bar_row: HBoxContainer = HBoxContainer.new()
+	branch_bar_row.add_theme_constant_override("separation", 8)
+	res_vbox.add_child(branch_bar_row)
+	for bn_key in ["勘探", "采矿", "物流", "商业"]:
+		var b_cnt: int = int(branch_counts.get(bn_key, 0))
+		var b_c: Color = branch_colors[bn_key]
+		var b_box: VBoxContainer = VBoxContainer.new()
+		b_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		b_box.add_theme_constant_override("separation", 2)
+		branch_bar_row.add_child(b_box)
+		b_box.add_child(_label("%s分支专精：%d / 5" % [bn_key, b_cnt], 10, b_c))
+		var bp_bar: ProgressBar = ProgressBar.new()
+		bp_bar.custom_minimum_size.y = 5
+		bp_bar.max_value = 5.0
+		bp_bar.value = float(b_cnt)
+		bp_bar.show_percentage = false
+		bp_bar.add_theme_stylebox_override("background", _style(Color("050b12"), Color("182c3e"), 2, 0))
+		bp_bar.add_theme_stylebox_override("fill", _style(b_c, b_c, 2, 0))
+		b_box.add_child(bp_bar)
 
 	var res_grid: GridContainer = GridContainer.new()
 	res_grid.columns = 2
@@ -2428,25 +2772,145 @@ func _refresh_v40_corporate_overview(v40: Dictionary, fin: Dictionary) -> void:
 	res_grid.add_theme_constant_override("v_separation", 4)
 	res_vbox.add_child(res_grid)
 
-	for rnode in V40.get_config().get("research_20", []):
+	var min_cfg_res: Dictionary = V40.get_config().get("minerals", {})
+	for rnode in all_rnodes:
 		var rid: String = str(rnode["id"])
 		var is_done: bool = (rid in unlocked)
+		var b_name: String = str(rnode.get("branch", "勘探"))
+		var b_col: Color = branch_colors.get(b_name, CYAN)
+		var req_arr: Array = rnode.get("req", [])
+		var req_ok: bool = true
+		var missing_reqs := PackedStringArray()
+		for rq in req_arr:
+			if not (str(rq) in unlocked):
+				req_ok = false
+				missing_reqs.append(str(rq))
+		var req_tag: String = "前置:无" if req_arr.is_empty() else ("前置:%s ✓" % "/".join(req_arr) if req_ok else "🔒需前置:%s" % "/".join(missing_reqs))
+
+		var smp_dict: Dictionary = rnode.get("samples", {})
+		var smp_str: String = "无需样本"
+		if not smp_dict.is_empty():
+			var s_parts := PackedStringArray()
+			for sk in smp_dict:
+				var sm_def: Dictionary = min_cfg_res.get(str(sk), {})
+				s_parts.append("%s%s×%dt" % [str(sm_def.get("icon", "•")), str(sm_def.get("name_zh", sk)), int(smp_dict[sk])])
+			smp_str = "样本:" + "+".join(s_parts)
+
+		var r_card_item: PanelContainer = PanelContainer.new()
+		r_card_item.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		r_card_item.add_theme_stylebox_override("panel", _style(Color("0f241e") if is_done else Color("0a1520"), GREEN if is_done else (b_col if req_ok else Color("243646")), 4, 5))
+		res_grid.add_child(r_card_item)
 		var r_item: HBoxContainer = HBoxContainer.new()
 		r_item.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		res_grid.add_child(r_item)
-		var r_lbl: Label = _label("%s (%dCr)
-%s" % [str(rnode["name_zh"]), int(rnode["cost_cr"]), str(rnode["effect_zh"])], 10, GREEN if is_done else INK)
+		r_card_item.add_child(r_item)
+		var r_lbl: Label = _label("[%s] %s  |  💰%dCr · 🕒%d日 · %s · %s\n%s" % [
+			b_name, str(rnode["name_zh"]), int(rnode["cost_cr"]), int(rnode.get("days", 5)), smp_str, req_tag, str(rnode["effect_zh"])
+		], 10, GREEN if is_done else (INK if req_ok else MUTED))
 		r_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		r_item.add_child(r_lbl)
-		var r_btn: Button = _button("✓已突破" if is_done else "研发", _v40_cmd.bind("StartResearch", {"tech_id": rid}), 26)
+		var btn_label: String = "✓已突破" if is_done else ("🔬研发" if req_ok else "🔒需%s" % "/".join(missing_reqs))
+		var r_btn: Button = _button(btn_label, _v40_cmd.bind("StartResearch", {"tech_id": rid}), 25)
 		r_btn.disabled = is_done
 		r_item.add_child(r_btn)
+
+	# F. 第 10.4 节新矿项目投资对比、第 19.3 节仓容下调溢出保护与第 23.4 节结构化经营调试日志
+	var diag_card: PanelContainer = PanelContainer.new()
+	diag_card.add_theme_stylebox_override("panel", _style(Color("0b1620"), EDGE, 6, 8))
+	v40_corp_box.add_child(diag_card)
+	var diag_vbox: VBoxContainer = VBoxContainer.new()
+	diag_vbox.add_theme_constant_override("separation", 4)
+	diag_card.add_child(diag_vbox)
+	var preset_prev: Dictionary = V40.calc_surface_preset_preview(v40, str(v40.get("active_mine_id", "dawn_1")))
+	diag_vbox.add_child(_label("🚢 集团船队集中改派/二手售船 & 第 7.5 节地表设施预设 (%s)" % str(preset_prev.get("desc_zh", "")), 13, CYAN))
+	var owned_mine_ids: Array[String] = []
+	for mk in v40["mines"]:
+		if bool(v40["mines"][mk].get("license_owned", false)):
+			owned_mine_ids.append(str(mk))
+	if owned_mine_ids.size() < 2 and not ("dawn_2" in owned_mine_ids):
+		owned_mine_ids.append("dawn_2")
+
+	var phase_zh_map: Dictionary = {"idle": "⚓矿区待命", "inbound": "🚀满载返航", "port_blocked": "🚨港仓满滞留", "waiting": "⏳等待装船"}
+	var ship_icon_map: Dictionary = {
+		"falcon_light": "res://assets/custom/rocket_light.png",
+		"peregrine_med": "res://assets/custom/rocket_reuse.png",
+		"leviathan_heavy": "res://assets/custom/rocket_heavy.png"
+	}
+	for s_item in v40.get("ships", []):
+		var sid_num: int = int(s_item.get("id", 1))
+		var stype_k: String = str(s_item.get("type_id", "falcon_light"))
+		var cur_m_id: String = str(s_item.get("assigned_mine_id", "dawn_1"))
+		var pend_m_id: String = str(s_item.get("pending_mine_id", ""))
+		var cur_idx: int = owned_mine_ids.find(cur_m_id)
+		var next_m_id: String = owned_mine_ids[(cur_idx + 1) % owned_mine_ids.size()] if cur_idx >= 0 else owned_mine_ids[0]
+		var cur_m_zh: String = str(v40["mines"].get(cur_m_id, {}).get("name_zh", cur_m_id))
+		var next_m_zh: String = str(v40["mines"].get(next_m_id, {}).get("name_zh", next_m_id))
+		var pend_str: String = (" (预定改派→%s)" % str(v40["mines"].get(pend_m_id, {}).get("name_zh", pend_m_id))) if pend_m_id != "" else ""
+		var is_ovh: bool = bool(s_item.get("overhauled", false))
+
+		var scard_p: PanelContainer = PanelContainer.new()
+		scard_p.add_theme_stylebox_override("panel", _style(Color("0a1622"), GREEN if is_ovh else Color("2a4862"), 4, 5))
+		diag_vbox.add_child(scard_p)
+		var s_row_h: HBoxContainer = HBoxContainer.new()
+		s_row_h.add_theme_constant_override("separation", 6)
+		scard_p.add_child(s_row_h)
+
+		var s_tex_p: String = str(ship_icon_map.get(stype_k, ""))
+		if ResourceLoader.exists(s_tex_p):
+			var s_ic := TextureRect.new()
+			s_ic.texture = load(s_tex_p)
+			s_ic.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+			s_ic.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+			s_ic.custom_minimum_size = Vector2(22, 34)
+			s_row_h.add_child(s_ic)
+
+		var s_info_lbl: Label = _label("【%s (%dt)】%s | 航线: %s%s | 货舱: %d/%dt | 累计 %d 趟 | %s" % [
+			str(s_item["name_zh"]), int(s_item.get("capacity_t", 100)),
+			str(phase_zh_map.get(str(s_item.get("phase", "idle")), "执飞中")),
+			cur_m_zh, pend_str, int(s_item.get("cargo_t", 0)), int(s_item.get("capacity_t", 100)),
+			int(s_item.get("trips_completed", 0)), "✓已检修(98.5%)" if is_ovh else "常规服役(96.8%)"
+		], 11, GREEN if is_ovh else INK)
+		s_info_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		s_row_h.add_child(s_info_lbl)
+		s_row_h.add_child(_button("🔄 改派→%s" % next_m_zh, _v40_cmd.bind("AssignRoute", {"ship_id": sid_num, "mine_id": next_m_id}), 24))
+		s_row_h.add_child(_button("✓已校准" if is_ovh else "✥检修(1200Cr)", _v40_cmd.bind("OverhaulShip", {"ship_id": sid_num}), 24))
+		s_row_h.add_child(_button("♻ 60%售出", _v40_cmd.bind("SellShip", {"ship_id": sid_num}), 24))
+
+	var preset_btn_row: HBoxContainer = HBoxContainer.new()
+	preset_btn_row.add_theme_constant_override("separation", 8)
+	diag_vbox.add_child(preset_btn_row)
+	preset_btn_row.add_child(_button("📋 保存当前矿区地表设施为预设", _v40_cmd.bind("SaveSurfacePreset", {}), 24))
+	preset_btn_row.add_child(_button("⚡ 一键应用地表预设 (%s)" % str(preset_prev.get("desc_zh", "")), _v40_cmd.bind("ApplySurfacePreset", {}), 24))
+	diag_vbox.add_child(_label("📋 第 10.4 节新矿区投资对比（含静态回本前提与改派原矿损失） & 第 19.3/23.4 节存档溢出校验与调试日志", 13, GOLD))
+	for mid_cmp in ["dawn_2", "crimson_1", "frost_1"]:
+		var c_info: Dictionary = V40.calc_expansion_comparison(v40, mid_cmp)
+		if not c_info.is_empty():
+			diag_vbox.add_child(_label("• 【%s】许可+基础设备 %d Cr | %s | 航线费 %d Cr/趟 (%.1f日) | 静态回本 ≈ %.1f 日 (%s) | %s" % [
+				str(c_info["name_zh"]), int(c_info["initial_cash_needed_cr"]), str(c_info["conservative_rate_zh"]),
+				int(c_info["trip_cost_cr"]), float(c_info["cycle_days"]), float(c_info["static_payback_days"]),
+				str(c_info["premise_zh"]), str(c_info["reassignment_text_zh"])
+			], 10, INK))
+	var ovf_row: HBoxContainer = HBoxContainer.new()
+	ovf_row.add_theme_constant_override("separation", 8)
+	diag_vbox.add_child(ovf_row)
+	ovf_row.add_child(_button("🛡 触发第 19.3 节旧档仓容下调溢出保护自检 (只出不进·不删货)", _v40_cmd.bind("SimulateCapacityOverflow", {}), 25))
+	var dlogs: Array = v40.get("debug_logs", [])
+	if not dlogs.is_empty():
+		var l0: Dictionary = dlogs[0]
+		ovf_row.add_child(_label("最新本地调试记录: [Tick %d / D%.1f] %s -> %s (%d) | %s" % [
+			int(l0.get("tick", 0)), float(l0.get("day", 0.0)), str(l0.get("type", "")),
+			str(l0.get("object_id", "")), int(l0.get("amount", 0)), str(l0.get("reason", ""))
+		], 10, CYAN))
 
 
 func _v40_select_mine(mine_id: String) -> void:
 	var v40: Dictionary = V40.ensure_v40_state(state)
 	v40["active_mine_id"] = mine_id
-	status_text = "已切换至矿区：「%s」。" % str(v40["mines"].get(mine_id, {}).get("name_zh", mine_id))
+	var m_dict: Dictionary = v40["mines"].get(mine_id, {})
+	status_text = "已切换至矿区：「%s」。" % str(m_dict.get("name_zh", mine_id))
+	if is_instance_valid(bgm_player) and state.sound_enabled and not test_mode:
+		bgm_player.stream = Synth.build_cluster_ambient_drone(str(m_dict.get("cluster_id", "dawn_frontier")))
+		bgm_player.play()
+	_cue("mining_hum")
 	_refresh_all()
 
 
@@ -2461,9 +2925,24 @@ func _v40_cmd(cmd_type: String, params: Dictionary) -> void:
 	var res: Dictionary = V40.execute_command(state, cmd_type, params)
 	if bool(res.get("ok", false)):
 		status_text = str(res.get("msg", "操作已执行。"))
-		_cue("tech" if cmd_type in ["BuildDrill", "PlaceMiningHead", "UpgradeFacility", "StartResearch"] else "cash")
-		if cmd_type == "PurchaseShip" and is_instance_valid(v10_mini_launch_view):
-			v10_mini_launch_view.call("notify_launch")
+		if cmd_type in ["ScanArea", "OrbitalSurvey"]:
+			_cue("scan")
+		elif cmd_type in ["BuildDrill", "PlaceMiningHead", "RelocateMiningHead"]:
+			_cue("drill_hit")
+		elif cmd_type in ["PurchaseShip", "LaunchPadDispatch"]:
+			_cue("launch")
+			if is_instance_valid(v10_mini_launch_view):
+				v10_mini_launch_view.call("notify_launch")
+			if is_instance_valid(v40_astra_hud_view):
+				v40_astra_hud_view.call("notify_launch")
+		elif cmd_type in ["AssignRoute", "TransferViaHub", "DeliverContract", "DeliverEndgame"]:
+			_cue("load_done")
+		elif cmd_type in ["SelectLaunchWindow", "OverhaulShip"]:
+			_cue("window_lock")
+		elif cmd_type in ["UpgradeFacility", "StartResearch", "InvestStarport", "ApplySurfacePreset"]:
+			_cue("tech")
+		else:
+			_cue("cash")
 		_persist()
 	else:
 		status_text = str(res.get("error", "操作未通过校验。"))
@@ -2481,6 +2960,10 @@ func _switch_v10_screen(screen_id: String) -> void:
 		star_map.visible = (screen_id == "starmap")
 	if is_instance_valid(v10_full_launch_view):
 		v10_full_launch_view.visible = (screen_id == "corp")
+	if is_instance_valid(v40_astra_hud_view):
+		v40_astra_hud_view.visible = (screen_id == "astra_hud")
+	if screen_id == "astra_hud":
+		_cue("recovery")
 	_refresh_all()
 
 
@@ -2500,7 +2983,15 @@ func _v10_expand_earth_warehouse() -> void:
 
 
 func _smart_dispatch_now() -> void:
-	_v40_cmd("PurchaseShip", {"ship_type_id": "falcon_light"})
+	_v40_cmd("LaunchPadDispatch", {})
+
+
+func _on_astra_overhaul_ship(ship_id: int) -> void:
+	_v40_cmd("OverhaulShip", {"ship_id": ship_id})
+
+
+func _on_astra_cycle_launch_window() -> void:
+	_v40_cmd("SelectLaunchWindow", {})
 
 
 func _dispatch_expendable_now() -> void:

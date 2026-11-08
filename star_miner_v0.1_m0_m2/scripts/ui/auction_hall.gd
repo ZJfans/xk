@@ -13,6 +13,7 @@ signal close_requested()
 
 const Tycoon = preload("res://scripts/core/galactic_tycoon.gd")
 const Rules = preload("res://scripts/core/mission_rules.gd")
+const V40 = preload("res://scripts/core/v40_dawn_engine.gd")
 
 const INK: Color = Color("e6f0f6")
 const MUTED: Color = Color("90a6b6")
@@ -94,6 +95,9 @@ func _style(bg: Color, border: Color, radius: int = 6, pad: int = 10) -> StyleBo
 	box.bg_color = bg
 	box.border_color = border
 	box.set_border_width_all(1)
+	box.border_width_top = 2
+	box.shadow_color = Color(0.0, 0.0, 0.0, 0.35)
+	box.shadow_size = 4
 	box.set_corner_radius_all(radius)
 	box.content_margin_left = pad
 	box.content_margin_right = pad
@@ -239,10 +243,10 @@ func _build_ui() -> void:
 	right_vbox.add_child(bidders_grid)
 
 	var bidder_defs: Array[Dictionary] = [
-		{"id": "player", "name": "👑 您 (星舰指挥官)", "tag": "地球博卡母港开拓者", "col": GREEN},
-		{"id": "rex", "name": "🔴 泰坦资源财团", "tag": "竞拍积极 · 偏好高估值矿区", "col": RED},
-		{"id": "victoria", "name": "🔵 星际航运财团", "tag": "投资运输效率 · 重视规模经营", "col": CYAN},
-		{"id": "otto", "name": "🟠 量子投机财团", "tag": "囤积矿石 · 偏爱低价盲盒矿区", "col": GOLD}
+		{"id": "player", "name": "👑 您 (破晓星域开拓集团)", "tag": "晨曦贸易港主承运商", "col": GREEN},
+		{"id": "rex", "name": "🔴 赤曜矿业 (泰坦资源)", "tag": "竞拍积极 · 偏好高估值富矿区", "col": RED},
+		{"id": "victoria", "name": "🔵 星环运输 (星际航运)", "tag": "干线扩张 · 重视规模与运力", "col": CYAN},
+		{"id": "otto", "name": "🟠 银穹资本 (量子投机)", "tag": "择机囤货 · 偏爱高溢价矿区", "col": GOLD}
 	]
 	for bdef in bidder_defs:
 		var bcard: PanelContainer = PanelContainer.new()
@@ -252,11 +256,21 @@ func _build_ui() -> void:
 		bvbox.add_theme_constant_override("separation", 3)
 		bcard.add_child(bvbox)
 		var bname: Label = _label(str(bdef["name"]), 13, bdef["col"])
+		var bcap_lbl: Label = _label("资金池评估中...", 10, CYAN)
+		var bbar: ProgressBar = ProgressBar.new()
+		bbar.custom_minimum_size.y = 6
+		bbar.max_value = 100.0
+		bbar.value = 60.0
+		bbar.show_percentage = false
+		bbar.add_theme_stylebox_override("background", _style(Color("050b12"), Color("1b3144"), 2, 0))
+		bbar.add_theme_stylebox_override("fill", _style(bdef["col"], bdef["col"], 2, 0))
 		var bstatus: Label = _label(str(bdef["tag"]), 11, MUTED)
 		bvbox.add_child(bname)
+		bvbox.add_child(bcap_lbl)
+		bvbox.add_child(bbar)
 		bvbox.add_child(bstatus)
 		bidders_grid.add_child(bcard)
-		bidder_cards[str(bdef["id"])] = {"panel": bcard, "status": bstatus, "color": bdef["col"]}
+		bidder_cards[str(bdef["id"])] = {"panel": bcard, "cap_lbl": bcap_lbl, "bar": bbar, "status": bstatus, "color": bdef["col"]}
 
 	# 玩家举牌操作按钮组
 	var action_row1: HBoxContainer = HBoxContainer.new()
@@ -414,6 +428,15 @@ func _finalize_gavel() -> void:
 		var res: Dictionary = Tycoon.claim_auction_plot(state, finished_plot, highest_bidder, current_bid_cents, preferred_star_id)
 		if bool(res.get("ok", false)):
 			if highest_bidder == "player":
+				if state.stats.has("v40"):
+					var v40_d: Dictionary = state.stats["v40"]
+					var act_mid: String = str(v40_d.get("active_mine_id", "dawn_1"))
+					var act_m: Dictionary = v40_d.get("mines", {}).get(act_mid, {})
+					if not act_m.is_empty():
+						act_m["silo_stock_t"] = int(act_m.get("silo_stock_t", 0)) + 80
+						var deps_a: Array = act_m.get("deposits", [])
+						if not deps_a.is_empty():
+							deps_a[0]["remaining_t"] = int(deps_a[0].get("remaining_t", 500)) + int(res.get("added_boxes", 12)) * 50
 				var p: Dictionary = res["plot"]
 				var gift_str: String = " + 免费自动钻机已就位" if bool(res.get("miner_gifted", false)) else ""
 				auctioneer_speech = "🎉 落槌成交！恭喜您以 %s 夺得「%s·%s」采矿权！「%s」储量 +%d 箱、现矿 +3 箱%s！" % [
@@ -430,7 +453,12 @@ func _finalize_gavel() -> void:
 		var res_s: Dictionary = Tycoon.award_live_stock_lot(state, highest_bidder, current_bid_cents)
 		if bool(res_s.get("ok", false)):
 			if highest_bidder == "player":
-				auctioneer_speech = "🎉 落槌成交！恭喜您以 %s 拍下 5%% 地球星舰母港永久股权（当前总持股 %d%%）！" % [
+				if state.stats.has("v40"):
+					var v40_s: Dictionary = state.stats["v40"]
+					var p_inv: Dictionary = v40_s.get("port_inventories", {}).get("dawn_port", {})
+					if not p_inv.is_empty():
+						p_inv["fee_discount_ratio"] = minf(0.25, float(p_inv.get("fee_discount_ratio", 0.0)) + 0.02)
+				auctioneer_speech = "🎉 落槌成交！恭喜您以 %s 拍下 5%% 星港永久控股权（当前总持股 %d%%，晨曦港运费减免同步提升）！" % [
 					Rules.money(current_bid_cents), int(res_s.get("player_shares", 10))
 				]
 				auction_updated.emit(auctioneer_speech, "achievement")
@@ -449,9 +477,12 @@ func refresh_ui() -> void:
 	var tycoon: Dictionary = state.stats["tycoon"]
 	var shares: Dictionary = tycoon["shares"]
 
-	header_cash_label.text = "可用竞拍现金：" + Rules.money(state.cash_cents)
-	var mayor_txt: String = " ★您已晋升母港执政官 (全矿石售价 +15%！)" if int(shares.get("player", 5)) >= 50 else " (持股达 50% 可晋升执政官享全矿石 +15% 垄断溢价)"
-	share_bar_label.text = "🏛 地球星舰母港股权格局：👑您 %d%%   |   🔴雷克斯 %d%%   |   🔵维多利亚 %d%%   |   🟠奥托 %d%%   |   待拍池 %d%%%s" % [
+	var v40_info: Dictionary = V40.ensure_v40_state(state)
+	var avail_cr: int = V40.available_cash_cr(v40_info)
+	var res_cr: int = int(v40_info.get("reserved_cash_cr", 0))
+	header_cash_label.text = "可支配现金：%d Cr (冻结保证金 %d Cr)" % [avail_cr, res_cr]
+	var mayor_txt: String = " ★您已晋升星港执政官 (全矿石售价 +15% & 港口费减免！)" if int(shares.get("player", 5)) >= 50 else " (持股达 50% 可晋升执政官享 +15% 溢价与运费减免)"
+	share_bar_label.text = "🏛 破晓星港股权与竞拍格局：👑您 %d%%  |  🔴赤曜矿业 %d%%  |  🔵星环运输 %d%%  |  🟠银穹资本 %d%%  |  待拍池 %d%%%s" % [
 		int(shares.get("player", 5)), int(shares.get("rex", 5)), int(shares.get("victoria", 5)),
 		int(shares.get("otto", 5)), int(shares.get("unowned", 80)), mayor_txt
 	]
@@ -552,10 +583,23 @@ func refresh_ui() -> void:
 
 	stage_speech_label.text = auctioneer_speech
 
+	var v40_rivals: Dictionary = v40_info.get("rivals", {})
+	var v40_fin: Dictionary = V40.financial_summary(v40_info)
+	var rival_map: Dictionary = {
+		"player": {"cash": avail_cr, "nw": int(v40_fin.get("estimated_net_worth_cr", 60000)), "ships": (v40_info.get("ships", []) as Array).size()},
+		"rex": {"cash": int(v40_rivals.get("crimson_mining", {}).get("cash_cr", 42000)), "nw": int(v40_rivals.get("crimson_mining", {}).get("net_worth_cr", 68000)), "ships": int(v40_rivals.get("crimson_mining", {}).get("ships", 2))},
+		"victoria": {"cash": int(v40_rivals.get("starring_transit", {}).get("cash_cr", 48000)), "nw": int(v40_rivals.get("starring_transit", {}).get("net_worth_cr", 72000)), "ships": int(v40_rivals.get("starring_transit", {}).get("ships", 3))},
+		"otto": {"cash": int(v40_rivals.get("silver_dome", {}).get("cash_cr", 55000)), "nw": int(v40_rivals.get("silver_dome", {}).get("net_worth_cr", 75000)), "ships": int(v40_rivals.get("silver_dome", {}).get("ships", 1))}
+	}
 	for bid_id in bidder_cards:
 		var cinfo: Dictionary = bidder_cards[bid_id]
 		var card_panel: PanelContainer = cinfo["panel"]
+		var cap_lbl: Label = cinfo["cap_lbl"]
+		var bbar: ProgressBar = cinfo["bar"]
 		var status_lbl: Label = cinfo["status"]
+		var r_stat: Dictionary = rival_map.get(bid_id, {"cash": 30000, "nw": 60000, "ships": 1})
+		cap_lbl.text = "💰 现金 %d Cr  |  🏛 净值 %d Cr  |  🚀 %d 艘" % [int(r_stat["cash"]), int(r_stat["nw"]), int(r_stat["ships"])]
+		bbar.value = clampf(float(int(r_stat["cash"])) / 800.0, 8.0, 100.0)
 		var is_top: bool = (active_mode != "idle" and highest_bidder == bid_id)
 		card_panel.add_theme_stylebox_override("panel", _style(
 			Color("162b26") if is_top else Color("09131d"),
@@ -566,5 +610,5 @@ func refresh_ui() -> void:
 			status_lbl.text = "✋ 当前最高举牌：%s (领先中！)" % Rules.money(current_bid_cents)
 			status_lbl.add_theme_color_override("font_color", GOLD)
 		else:
-			status_lbl.text = "正在席位观察牌价..." if active_mode != "idle" else "随时准备参与举牌"
+			status_lbl.text = "正在席位评估出价上限 (≤32%现金)..." if active_mode != "idle" else "随时准备参与举牌"
 			status_lbl.add_theme_color_override("font_color", MUTED)
