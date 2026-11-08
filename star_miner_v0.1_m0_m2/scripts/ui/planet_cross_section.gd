@@ -12,6 +12,7 @@ signal cross_section_action(action_id: String)
 
 const V40 = preload("res://scripts/core/v40_dawn_engine.gd")
 const Assets = preload("res://scripts/services/asset_loader.gd")
+const MiningFX = preload("res://scripts/ui/visual/mining_fx_layer.gd")
 const RIG_FALLBACK = preload("res://assets/kenney/shooter/playerShip2_orange.png")
 const SHIP_FALLBACK = preload("res://assets/kenney/shooter/playerShip3_green.png")
 
@@ -31,6 +32,7 @@ var star_id: String = ""
 var hovered_deposit_idx: int = -1
 var selected_deposit_idx: int = -1
 var hovered_facility: String = ""
+var _v6_fx: Control
 
 
 func _ready() -> void:
@@ -40,6 +42,20 @@ func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	clip_contents = true
 	set_process(true)
+	_v6_fx = MiningFX.new()
+	add_child(_v6_fx)
+	_v6_fx.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_v6_fx.set("source", self)
+
+
+func emit_visual_event(command: String) -> void:
+	if is_instance_valid(_v6_fx):
+		_v6_fx.call("pulse_event", command)
+
+
+func set_visual_reduced_motion(enabled: bool) -> void:
+	if is_instance_valid(_v6_fx):
+		_v6_fx.set("reduce_motion", enabled)
 
 
 func _process(_delta: float) -> void:

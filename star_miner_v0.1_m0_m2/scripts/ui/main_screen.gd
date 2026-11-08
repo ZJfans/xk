@@ -13,6 +13,9 @@ const V40 = preload("res://scripts/core/v40_dawn_engine.gd")
 const CONCEPT_BG = preload("res://assets/concept/lunar_base_reference.png")
 const BoardLayout = preload("res://scripts/ui/board_layout.gd")
 const CorporateRenderer = preload("res://scripts/ui/v40_corporate_renderer.gd")
+const VisualTheme = preload("res://scripts/ui/visual/visual_theme.gd")
+const CyberFXDirector = preload("res://scripts/ui/visual/cyber_fx_director.gd")
+const LaunchCinematic = preload("res://scripts/ui/visual/launch_cinematic.gd")
 
 var board_title: Label
 var board_stock: ProgressBar
@@ -56,6 +59,9 @@ var v40_market_buttons_box: VBoxContainer
 var v40_bottom_telemetry_label: Label
 var v40_tab_astra_btn: Button
 var v40_astra_hud_view: Control
+var visual_director: CanvasLayer
+var launch_cinematic: Control
+var _resume_speed_after_launch: int = 0
 var nav_buttons: Dictionary = {}
 var dev_full_access: bool = true
 
@@ -167,6 +173,7 @@ func _ready() -> void:
 	_install_theme()
 	_build_ui()
 	BoardLayout.mount(self)
+	_install_cyber_visuals()
 	_prepare_audio()
 	_suggest_miner()
 	_refresh_all()
@@ -177,12 +184,61 @@ func _ready() -> void:
 		call_deferred("_show_settlement")
 
 
+func _install_cyber_visuals() -> void:
+	visual_director = CyberFXDirector.new()
+	add_child(visual_director)
+	var cinema_layer := CanvasLayer.new()
+	cinema_layer.layer = 90
+	add_child(cinema_layer)
+	launch_cinematic = LaunchCinematic.new()
+	cinema_layer.add_child(launch_cinematic)
+	launch_cinematic.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	launch_cinematic.cinematic_finished.connect(_on_launch_cinematic_finished)
+
+
+func _play_dispatch_cinematic() -> void:
+	if test_mode or not is_instance_valid(launch_cinematic):
+		return
+	if visual_director != null and bool(visual_director.get("reduce_motion")):
+		return
+	var v40: Dictionary = state.stats.get("v40", {})
+	var mid: String = str(v40.get("active_mine_id", "dawn_1"))
+	var mine: Dictionary = v40.get("mines", {}).get(mid, {})
+	_resume_speed_after_launch = speed
+	speed = 0
+	launch_cinematic.call("play_launch", str(mine.get("name_zh", "星际矿业基地")))
+
+
+func _on_launch_cinematic_finished() -> void:
+	if state != null and not editing and _resume_speed_after_launch > 0:
+		speed = _resume_speed_after_launch
+	_resume_speed_after_launch = 0
+
+
+func _toggle_visual_motion() -> void:
+	if not is_instance_valid(visual_director):
+		return
+	var reduced: bool = not bool(visual_director.get("reduce_motion"))
+	visual_director.call("set_reduced_motion", reduced)
+	if is_instance_valid(cross_section_view):
+		cross_section_view.call("set_visual_reduced_motion", reduced)
+	if is_instance_valid(v40_galaxy_map_view):
+		v40_galaxy_map_view.set("reduce_motion", reduced)
+	if is_instance_valid(launch_cinematic) and bool(launch_cinematic.get("_running")) and reduced:
+		launch_cinematic.call("finish")
+	status_text = "已降低视觉动效（F8 再次切换）" if reduced else "已启用完整视觉特效（F8 切换）"
+	visual_director.call("notify_operation", status_text, true, "MotionPreference")
+
+
 func _unhandled_key_input(event: InputEvent) -> void:
 	if not (event is InputEventKey) or not event.pressed or event.echo:
 		return
 	if front_menu != null and front_menu.visible:
 		return
 	match event.keycode:
+		KEY_F8:
+			_toggle_visual_motion()
+			get_viewport().set_input_as_handled()
 		KEY_SPACE:
 			if board_window != null and board_window.visible:
 				return
@@ -260,6 +316,7 @@ func _install_theme() -> void:
 	app_theme.set_stylebox("focus", "LineEdit", _style(Color("132638"), GOLD, 4, 6))
 	app_theme.set_stylebox("background", "ProgressBar", _style(Color("09131d"), EDGE, 3, 0))
 	app_theme.set_stylebox("fill", "ProgressBar", _style(Color("49d6e4"), Color("49d6e4"), 3, 0))
+	VisualTheme.polish(app_theme)
 	theme = app_theme
 
 
@@ -269,7 +326,9 @@ func _style(fill: Color, border: Color, radius: int = 6, margin: int = 8) -> Sty
 	box.border_color = border
 	box.set_border_width_all(1)
 	box.border_width_top = 2
-	box.set_corner_radius_all(radius)
+	box.set_corner_radius_all(mini(radius, 3))
+	box.shadow_color = Color(border.r, border.g, border.b, 0.12)
+	box.shadow_size = 3
 	box.content_margin_left = margin
 	box.content_margin_right = margin
 	box.content_margin_top = margin
@@ -2648,6 +2707,14 @@ func _v40_cmd(cmd_type: String, params: Dictionary) -> void:
 		status_text = str(res.get("error", "操作未通过校验。"))
 		_cue("stall")
 	_v40_show_mining_message(status_text, not bool(res.get("ok", false)))
+	if is_instance_valid(visual_director):
+		visual_director.call("notify_operation", status_text, bool(res.get("ok", false)), cmd_type)
+	if bool(res.get("ok", false)):
+		if cmd_type == "LaunchPadDispatch":
+			_play_dispatch_cinematic()
+		elif cmd_type in ["ScanArea", "BuildDrill", "PlaceMiningHead", "UpgradeFacility", "RelocateMiningHead"]:
+			if is_instance_valid(cross_section_view):
+				cross_section_view.call("emit_visual_event", cmd_type)
 	_refresh_all()
 
 
@@ -2671,6 +2738,8 @@ func _switch_v10_screen(screen_id: String) -> void:
 		v40_mining_feedback.visible = screen_id == "mining" and state.challenge_id == ""
 	if screen_id == "astra_hud":
 		_cue("recovery")
+	if is_instance_valid(visual_director):
+		visual_director.call("focus_scene", screen_id)
 	_refresh_all()
 
 

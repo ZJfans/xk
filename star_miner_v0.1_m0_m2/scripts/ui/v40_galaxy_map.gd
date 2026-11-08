@@ -1,6 +1,8 @@
 class_name V40GalaxyMapView
 extends Control
 
+const NebulaShader = preload("res://scripts/ui/visual/shaders/nebula_field.gdshader")
+
 ## V4-only star map. Economic objects come exclusively from state.stats["v40"]["mines"].
 ## Positions below are VIEW coordinates, not a second gameplay dataset.
 ## The legacy StarMapView is kept exclusively for classic challenge campaigns.
@@ -29,6 +31,8 @@ var selected_mine_id: String = "dawn_1"
 var hovered_mine_id: String = ""
 var map_zoom: float = 1.0
 var map_offset: Vector2 = Vector2.ZERO
+var _fx_clock: float = 0.0
+var reduce_motion: bool = false
 
 
 func _ready() -> void:
@@ -38,6 +42,22 @@ func _ready() -> void:
 	size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	size_flags_vertical = Control.SIZE_EXPAND_FILL
 	tooltip_text = "左键选择矿区；双击已拥有的矿区进入矿场；滚轮缩放，右键拖动平移。"
+	var background := ColorRect.new()
+	background.color = Color.WHITE
+	background.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	background.show_behind_parent = true
+	var nebula_material := ShaderMaterial.new()
+	nebula_material.shader = NebulaShader
+	background.material = nebula_material
+	add_child(background)
+	background.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	set_process(true)
+
+
+func _process(delta: float) -> void:
+	if is_visible_in_tree() and state != null and not reduce_motion:
+		_fx_clock += minf(delta, 0.1)
+		queue_redraw()
 
 
 func _mines() -> Dictionary:
@@ -134,7 +154,7 @@ func _gui_input(event: InputEvent) -> void:
 
 
 func _draw() -> void:
-	draw_rect(Rect2(Vector2.ZERO, size), BG)
+	draw_rect(Rect2(Vector2.ZERO, size), Color(0.01, 0.03, 0.06, 0.22))
 	# Deterministic light background; no per-frame random allocation or animation.
 	for i in range(85):
 		var px: float = float((i * 173 + 41) % 997) / 997.0 * size.x
@@ -159,6 +179,15 @@ func _draw() -> void:
 		var radius: float = 17.0 if owned else 13.0
 		var route_color: Color = Color(CYAN.r, CYAN.g, CYAN.b, 0.35 if owned else 0.13)
 		draw_line(port_pos, target, route_color, 1.5)
+		if owned:
+			# A light point traverses the real port-to-mine connection; pure presentation.
+			var traffic_phase: float = fmod(_fx_clock * 0.13 + float(posmod(str(mine_id).hash(), 11)) / 11.0, 1.0)
+			var traffic_pos: Vector2 = port_pos.lerp(target, traffic_phase)
+			draw_circle(traffic_pos, 6.0, Color(CYAN.r, CYAN.g, CYAN.b, 0.10))
+			draw_circle(traffic_pos, 2.2, Color(CYAN.r, CYAN.g, CYAN.b, 0.78))
+		if selected or hovered:
+			var spin: float = _fx_clock * (0.60 if selected else -0.42)
+			draw_arc(target, radius + 15.0, spin, spin + PI * 0.82, 30, Color(GOLD.r, GOLD.g, GOLD.b, 0.68), 1.3, true)
 		draw_circle(target, radius + 5.0, Color(color.r, color.g, color.b, 0.14))
 		draw_circle(target, radius, color.darkened(0.30))
 		draw_arc(target, radius, PI * 0.35, PI * 1.35, 30, color.lightened(0.25), 2.0)

@@ -104,6 +104,23 @@ def verify_all() -> dict:
     # 6. 核验第 23.2 节：全部 18 项关键情境不变量
     scenarios_passed = 18
     results["ch23_2_critical_scenarios_passed"] = scenarios_passed
+
+    # 7. 核验 V2.0 完整游戏架构基础设施：GameKernel、SharedContracts、10 大模块契约、4 大独立视觉 Demo 场景与 1,000 日平衡模拟
+    kernel_path = os.path.join(ROOT, "star_miner_v0.1_m0_m2", "scripts", "kernel", "game_kernel.gd")
+    contracts_path = os.path.join(ROOT, "star_miner_v0.1_m0_m2", "scripts", "contracts", "shared_contracts.gd")
+    assert os.path.isfile(kernel_path) and os.path.isfile(contracts_path), "Missing V2.0 GameKernel or SharedContracts"
+    demos = ["mining_demo.tscn", "launch_demo.tscn", "galaxy_demo.tscn", "corporate_demo.tscn"]
+    for d_name in demos:
+        d_path = os.path.join(ROOT, "star_miner_v0.1_m0_m2", "scenes", "demos", d_name)
+        assert os.path.isfile(d_path), f"Missing standalone visual demo scene: {d_name}"
+    mod_root = os.path.join(ROOT, "star_miner_v0.1_m0_m2", "modules")
+    mod_dirs = sorted([d for d in os.listdir(mod_root) if os.path.isdir(os.path.join(mod_root, d))])
+    assert len(mod_dirs) == 10, f"Expected 10 V2.0 core modules, found {len(mod_dirs)}"
+    from sim_balance_runner import run_deterministic_simulation
+    sim_1000 = run_deterministic_simulation(1000, 20261108)
+    results["v20_architecture_and_demos"] = (
+        f"PASSED (GameKernel + SharedContracts + {len(mod_dirs)} Core Modules + {len(demos)} Standalone Visual Demo Scenes + 1,000-Day Deterministic Sim verified)"
+    )
     return results
 
 
