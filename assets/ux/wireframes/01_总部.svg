@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1440 900" width="1440" height="900">
+<rect x="0" y="0" width="1440" height="900" rx="0" fill="#07111b" stroke="none" stroke-width="1"/>
+<rect x="0" y="0" width="1440" height="71" rx="0" fill="#10202e" stroke="none" stroke-width="1"/>
+<text x="24" y="43" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="21" fill="#f3b66a" font-weight="700" letter-spacing="0" text-anchor="start">ROCKET PROSPECTORS  /  星矿大亨</text>
+<rect x="360" y="14" width="133" height="43" rx="7" fill="#173243" stroke="#58d9eb" stroke-width="1"/>
+<text x="426" y="42" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="15" fill="#58d9eb" font-weight="600" letter-spacing="0" text-anchor="middle">总部</text>
+<text x="570" y="42" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="15" fill="#98afbf" font-weight="600" letter-spacing="0" text-anchor="middle">矿区竞拍</text>
+<text x="714" y="42" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="15" fill="#98afbf" font-weight="600" letter-spacing="0" text-anchor="middle">太空采矿</text>
+<text x="858" y="42" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="15" fill="#98afbf" font-weight="600" letter-spacing="0" text-anchor="middle">火箭装配</text>
+<text x="1002" y="42" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="15" fill="#98afbf" font-weight="600" letter-spacing="0" text-anchor="middle">市场交易</text>
+<text x="1146" y="42" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="15" fill="#98afbf" font-weight="600" letter-spacing="0" text-anchor="middle">本轮结算</text>
+<text x="1402" y="43" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="16" fill="#78dfaf" font-weight="700" letter-spacing="0" text-anchor="end">40,000 Cr</text>
+<text x="30" y="119" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="31" fill="#e9f4fa" font-weight="700" letter-spacing="0" text-anchor="start">星际总部</text>
+<text x="31" y="149" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="15" fill="#98afbf" font-weight="400" letter-spacing="0" text-anchor="start">局外决策中心：科技、竞拍、贷款与股权；突出单一主行动，而非信息洪水</text>
+<rect x="0" y="842" width="1440" height="58" rx="0" fill="#10202e" stroke="none" stroke-width="1"/>
+<text x="27" y="877" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="15" fill="#98afbf" font-weight="400" letter-spacing="0" text-anchor="start">下一步：先完成当前页面的关键决策</text>
+<text x="1413" y="877" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="13" fill="#f3b66a" font-weight="400" letter-spacing="0" text-anchor="end">UX V1.0 · 可编辑线框图 / 演示数据</text>
+<rect x="30" y="181" width="912" height="424" rx="9" fill="#173243" stroke="#2e5267" stroke-width="1"/>
+<text x="66" y="224" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="17" fill="#58d9eb" font-weight="700" letter-spacing="0" text-anchor="start">晨曦星域 / 拓荒者计划</text>
+<text x="66" y="294" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="42" fill="#e9f4fa" font-weight="700" letter-spacing="0" text-anchor="start">从一座发射基地，</text>
+<text x="66" y="351" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="42" fill="#e9f4fa" font-weight="700" letter-spacing="0" text-anchor="start">建立你的矿业航线。</text>
+<text x="66" y="406" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="17" fill="#98afbf" font-weight="400" letter-spacing="0" text-anchor="start">竞拍矿区 → 太空勘探 → 自动采矿 → 火箭运输 → 市场获利</text>
+<rect x="66" y="478" width="250" height="42" rx="6" fill="#58d9eb" stroke="#58d9eb" stroke-width="1"/><text x="191.0" y="506" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="15" fill="#07111b" font-weight="700" letter-spacing="0" text-anchor="middle">开始矿区竞拍  →</text>
+<rect x="337" y="478" width="217" height="42" rx="6" fill="#173243" stroke="#2e5267" stroke-width="1"/><text x="445.5" y="506" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="15" fill="#e9f4fa" font-weight="700" letter-spacing="0" text-anchor="middle">参观装配车间</text>
+<rect x="975" y="181" width="435" height="424" rx="9" fill="#10202e" stroke="#2e5267" stroke-width="1"/>
+<text x="1004" y="222" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="21" fill="#e9f4fa" font-weight="700" letter-spacing="0" text-anchor="start">本轮战略目标</text><text x="1004" y="248" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="13" fill="#98afbf" font-weight="400" letter-spacing="0" text-anchor="start">第一阶段只保留一条明确任务</text>
+<text x="1005" y="314" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="20" fill="#e9f4fa" font-weight="400" letter-spacing="0" text-anchor="start">01   获得第一处采矿权</text>
+<line x1="1000" y1="338" x2="1382" y2="338" stroke="#2e5267" stroke-width="1" stroke-dasharray=""/>
+<text x="1005" y="382" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="20" fill="#98afbf" font-weight="400" letter-spacing="0" text-anchor="start">02   发射探测器发现矿体</text>
+<line x1="1000" y1="409" x2="1382" y2="409" stroke="#2e5267" stroke-width="1" stroke-dasharray=""/>
+<text x="1005" y="451" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="20" fill="#98afbf" font-weight="400" letter-spacing="0" text-anchor="start">03   运回矿石并完成交易</text>
+<text x="33" y="650" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="17" fill="#98afbf" font-weight="400" letter-spacing="0" text-anchor="start">总部设施 / 次要功能在独立空间中，不打断本轮经营</text>
+<rect x="30" y="674" width="331" height="141" rx="9" fill="#10202e" stroke="#2e5267" stroke-width="1"/>
+<text x="49" y="711" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="20" fill="#f3b66a" font-weight="700" letter-spacing="0" text-anchor="start">矿区竞拍</text>
+<text x="49" y="744" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="14" fill="#98afbf" font-weight="400" letter-spacing="0" text-anchor="start">进入本轮拍卖</text>
+<text x="49" y="785" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="13" fill="#58d9eb" font-weight="400" letter-spacing="0" text-anchor="start">进入  →</text>
+<rect x="380" y="674" width="331" height="141" rx="9" fill="#10202e" stroke="#2e5267" stroke-width="1"/>
+<text x="399" y="711" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="20" fill="#f3b66a" font-weight="700" letter-spacing="0" text-anchor="start">科技中心</text>
+<text x="399" y="744" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="14" fill="#98afbf" font-weight="400" letter-spacing="0" text-anchor="start">升级采矿与火箭</text>
+<text x="399" y="785" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="13" fill="#98afbf" font-weight="400" letter-spacing="0" text-anchor="start">后续阶段开放</text>
+<rect x="730" y="674" width="331" height="141" rx="9" fill="#10202e" stroke="#2e5267" stroke-width="1"/>
+<text x="749" y="711" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="20" fill="#f3b66a" font-weight="700" letter-spacing="0" text-anchor="start">银行与情报</text>
+<text x="749" y="744" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="14" fill="#98afbf" font-weight="400" letter-spacing="0" text-anchor="start">贷款和特殊交易</text>
+<text x="749" y="785" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="13" fill="#98afbf" font-weight="400" letter-spacing="0" text-anchor="start">后续阶段开放</text>
+<rect x="1080" y="674" width="331" height="141" rx="9" fill="#10202e" stroke="#2e5267" stroke-width="1"/>
+<text x="1099" y="711" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="20" fill="#f3b66a" font-weight="700" letter-spacing="0" text-anchor="start">星域股权</text>
+<text x="1099" y="744" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="14" fill="#98afbf" font-weight="400" letter-spacing="0" text-anchor="start">长期战役胜利条件</text>
+<text x="1099" y="785" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="13" fill="#98afbf" font-weight="400" letter-spacing="0" text-anchor="start">后续阶段开放</text>
+</svg>

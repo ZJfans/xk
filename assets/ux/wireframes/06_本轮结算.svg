@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1440 900" width="1440" height="900">
+<rect x="0" y="0" width="1440" height="900" rx="0" fill="#07111b" stroke="none" stroke-width="1"/>
+<rect x="0" y="0" width="1440" height="71" rx="0" fill="#10202e" stroke="none" stroke-width="1"/>
+<text x="24" y="43" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="21" fill="#f3b66a" font-weight="700" letter-spacing="0" text-anchor="start">ROCKET PROSPECTORS  /  星矿大亨</text>
+<text x="426" y="42" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="15" fill="#98afbf" font-weight="600" letter-spacing="0" text-anchor="middle">总部</text>
+<text x="570" y="42" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="15" fill="#98afbf" font-weight="600" letter-spacing="0" text-anchor="middle">矿区竞拍</text>
+<text x="714" y="42" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="15" fill="#98afbf" font-weight="600" letter-spacing="0" text-anchor="middle">太空采矿</text>
+<text x="858" y="42" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="15" fill="#98afbf" font-weight="600" letter-spacing="0" text-anchor="middle">火箭装配</text>
+<text x="1002" y="42" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="15" fill="#98afbf" font-weight="600" letter-spacing="0" text-anchor="middle">市场交易</text>
+<rect x="1080" y="14" width="133" height="43" rx="7" fill="#173243" stroke="#58d9eb" stroke-width="1"/>
+<text x="1146" y="42" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="15" fill="#58d9eb" font-weight="600" letter-spacing="0" text-anchor="middle">本轮结算</text>
+<text x="1402" y="43" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="16" fill="#78dfaf" font-weight="700" letter-spacing="0" text-anchor="end">40,000 Cr</text>
+<text x="30" y="119" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="31" fill="#e9f4fa" font-weight="700" letter-spacing="0" text-anchor="start">本轮经营结算</text>
+<text x="31" y="149" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="15" fill="#98afbf" font-weight="400" letter-spacing="0" text-anchor="start">通过收入、成本、利润和明确的建议反馈，让玩家产生“再来一轮”的动机</text>
+<rect x="0" y="842" width="1440" height="58" rx="0" fill="#10202e" stroke="none" stroke-width="1"/>
+<text x="27" y="877" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="15" fill="#98afbf" font-weight="400" letter-spacing="0" text-anchor="start">下一步：先完成当前页面的关键决策</text>
+<text x="1413" y="877" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="13" fill="#f3b66a" font-weight="400" letter-spacing="0" text-anchor="end">UX V1.0 · 可编辑线框图 / 演示数据</text>
+<rect x="30" y="180" width="448" height="112" rx="9" fill="#173243" stroke="#2e5267" stroke-width="1"/>
+<text x="54" y="220" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="15" fill="#98afbf" font-weight="400" letter-spacing="0" text-anchor="start">本轮收入</text>
+<text x="54" y="265" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="32" fill="#78dfaf" font-weight="700" letter-spacing="0" text-anchor="start">19,200 Cr</text>
+<rect x="494" y="180" width="448" height="112" rx="9" fill="#173243" stroke="#2e5267" stroke-width="1"/>
+<text x="518" y="220" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="15" fill="#98afbf" font-weight="400" letter-spacing="0" text-anchor="start">经营成本</text>
+<text x="518" y="265" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="32" fill="#f3b66a" font-weight="700" letter-spacing="0" text-anchor="start">12,100 Cr</text>
+<rect x="958" y="180" width="448" height="112" rx="9" fill="#173243" stroke="#2e5267" stroke-width="1"/>
+<text x="982" y="220" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="15" fill="#98afbf" font-weight="400" letter-spacing="0" text-anchor="start">净利润</text>
+<text x="982" y="265" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="32" fill="#58d9eb" font-weight="700" letter-spacing="0" text-anchor="start">7,100 Cr</text>
+<rect x="30" y="311" width="848" height="500" rx="9" fill="#10202e" stroke="#2e5267" stroke-width="1"/>
+<rect x="899" y="311" width="511" height="500" rx="9" fill="#173243" stroke="#2e5267" stroke-width="1"/>
+<text x="55" y="360" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="21" fill="#e9f4fa" font-weight="700" letter-spacing="0" text-anchor="start">本轮回顾  /  晨曦矿区</text>
+<line x1="55" y1="382" x2="847" y2="382" stroke="#2e5267" stroke-width="1" stroke-dasharray=""/>
+<text x="60" y="427" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="18" fill="#98afbf" font-weight="400" letter-spacing="0" text-anchor="start">竞拍矿区</text>
+<text x="826" y="427" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="18" fill="#e9f4fa" font-weight="650" letter-spacing="0" text-anchor="end">青岚碎星带</text>
+<line x1="60" y1="445" x2="822" y2="445" stroke="#2e5267" stroke-width="1" stroke-dasharray=""/>
+<text x="60" y="487" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="18" fill="#98afbf" font-weight="400" letter-spacing="0" text-anchor="start">已勘探天体</text>
+<text x="826" y="487" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="18" fill="#e9f4fa" font-weight="650" letter-spacing="0" text-anchor="end">1 处</text>
+<line x1="60" y1="505" x2="822" y2="505" stroke="#2e5267" stroke-width="1" stroke-dasharray=""/>
+<text x="60" y="547" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="18" fill="#98afbf" font-weight="400" letter-spacing="0" text-anchor="start">已部署采矿设备</text>
+<text x="826" y="547" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="18" fill="#e9f4fa" font-weight="650" letter-spacing="0" text-anchor="end">1 套</text>
+<line x1="60" y1="565" x2="822" y2="565" stroke="#2e5267" stroke-width="1" stroke-dasharray=""/>
+<text x="60" y="607" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="18" fill="#98afbf" font-weight="400" letter-spacing="0" text-anchor="start">火箭往返任务</text>
+<text x="826" y="607" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="18" fill="#e9f4fa" font-weight="650" letter-spacing="0" text-anchor="end">1 趟</text>
+<line x1="60" y1="625" x2="822" y2="625" stroke="#2e5267" stroke-width="1" stroke-dasharray=""/>
+<text x="60" y="667" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="18" fill="#98afbf" font-weight="400" letter-spacing="0" text-anchor="start">累计矿石售出</text>
+<text x="826" y="667" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="18" fill="#e9f4fa" font-weight="650" letter-spacing="0" text-anchor="end">80 t</text>
+<line x1="60" y1="685" x2="822" y2="685" stroke="#2e5267" stroke-width="1" stroke-dasharray=""/>
+<text x="60" y="727" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="18" fill="#98afbf" font-weight="400" letter-spacing="0" text-anchor="start">期末剩余现金</text>
+<text x="826" y="727" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="18" fill="#e9f4fa" font-weight="650" letter-spacing="0" text-anchor="end">47,100 Cr</text>
+<line x1="60" y1="745" x2="822" y2="745" stroke="#2e5267" stroke-width="1" stroke-dasharray=""/>
+<text x="925" y="360" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="21" fill="#e9f4fa" font-weight="700" letter-spacing="0" text-anchor="start">下一轮投资方向</text><text x="925" y="386" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="13" fill="#98afbf" font-weight="400" letter-spacing="0" text-anchor="start">完整的短局反馈，而不只是数字</text>
+<text x="925" y="435" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="18" fill="#e9f4fa" font-weight="400" letter-spacing="0" text-anchor="start">01  更早扫描高价值矿体</text>
+<text x="925" y="492" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="18" fill="#e9f4fa" font-weight="400" letter-spacing="0" text-anchor="start">02  根据趟数选择复用火箭</text>
+<text x="925" y="549" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="18" fill="#e9f4fa" font-weight="400" letter-spacing="0" text-anchor="start">03  在合适的报价时出售</text>
+<text x="925" y="636" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="20" fill="#78dfaf" font-weight="700" letter-spacing="0" text-anchor="start">你已经完成第一轮经营！</text>
+<rect x="924" y="715" width="460" height="42" rx="6" fill="#58d9eb" stroke="#58d9eb" stroke-width="1"/><text x="1154.0" y="743" font-family="Noto Sans CJK SC,Microsoft YaHei,sans-serif" font-size="15" fill="#07111b" font-weight="700" letter-spacing="0" text-anchor="middle">返回总部 / 开始下一轮  →</text>
+</svg>

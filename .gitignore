@@ -1,0 +1,12 @@
+# Godot generated files
+.godot/
+.import/
+*.tmp
+*.log
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+# Do not commit saves or the legacy user's profile
+user_data/
