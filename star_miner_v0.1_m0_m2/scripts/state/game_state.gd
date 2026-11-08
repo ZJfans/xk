@@ -221,8 +221,10 @@ func load_dict(raw: Dictionary) -> Dictionary:
 		return {"ok": false, "error": "存档结构不完整，无法安全恢复。"}
 	var is_endless := bool(source.get("endless_mode", false)) or str(source.get("scenario_id", "A")) == "E"
 	var is_galaxy := str(source.get("scenario_id", "A")) == "X"
+	# Legacy seasons remain bounded; V4 long-run saves have no season tick ceiling.
+	var v40_long_run: bool = str(source.get("challenge_id", "")) == "" and source["stats"].has("v40") and (source["stats"]["v40"] is Dictionary)
 	var max_allowed_ticks := 9999 if is_endless else (90 if is_galaxy else int(_base_balance["season_ticks"]))
-	if int(source.get("current_tick", -1)) < 0 or int(source.get("current_tick", -1)) > max_allowed_ticks or int(source.get("cash_cents", -1)) < 0:
+	if int(source.get("current_tick", -1)) < 0 or (not v40_long_run and int(source.get("current_tick", -1)) > max_allowed_ticks) or int(source.get("cash_cents", -1)) < 0:
 		return {"ok": false, "error": "存档中的日期或现金无效。"}
 	for ore in ["metal", "crystal"]:
 		if not source["port_storage"].has(ore) or not source["sale_policies"].has(ore):
@@ -261,6 +263,11 @@ func load_dict(raw: Dictionary) -> Dictionary:
 	next_mission_id = int(source.get("next_mission_id", 1))
 	season_ended = bool(source.get("season_ended", false))
 	settlement = source.get("settlement", {}).duplicate(true)
+	# Pre-migration saves could be force-settled by the legacy 30-day clock.
+	# Reopen only the V4 long-run campaign; preserve classic challenge endings.
+	if v40_long_run and season_ended:
+		season_ended = false
+		settlement = {}
 	event_log = source.get("event_log", []).duplicate(true)
 	stats = source["stats"].duplicate(true)
 	if not stats.has("trips_by_mode"):

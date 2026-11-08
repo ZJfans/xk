@@ -1,6 +1,8 @@
 extends RefCounted
 
 const CrossSection = preload("res://scripts/ui/planet_cross_section.gd")
+const MiningInspector = preload("res://scripts/ui/v40_mining_inspector.gd")
+const V40GalaxyMap = preload("res://scripts/ui/v40_galaxy_map.gd")
 const AuctionHall = preload("res://scripts/ui/auction_hall.gd")
 const LaunchView = preload("res://scripts/ui/launch_recovery_view.gd")
 
@@ -114,24 +116,24 @@ static func mount(ui: Control) -> void:
 	ui.v10_zone_selector_box = zone_switch_col
 
 	left_vbox.add_child(ui._label("🛠 矿场建设工具", 12, Color("49d6e4")))
-	left_vbox.add_child(ui._button("📡 地面扫描(300Cr)", ui._v40_cmd.bind("ScanArea", {}), 27))
-	left_vbox.add_child(ui._button("🏗 建钻井台(8000)", ui._v40_cmd.bind("BuildDrill", {}), 27))
+	left_vbox.add_child(ui._button("📡 地面扫描(300Cr)", ui._v40_request_mining_action.bind("ScanArea", {}), 27))
+	left_vbox.add_child(ui._button("🏗 建钻井台(8000)", ui._v40_request_mining_action.bind("BuildDrill", {}), 27))
 	left_vbox.add_child(ui._button("⛏ 装采掘头(2000+)", ui._v10_drill_next_shallow_pocket, 27))
-	left_vbox.add_child(ui._button("🔀 迁移采掘头(500)", ui._v40_cmd.bind("RelocateMiningHead", {}), 26))
+	left_vbox.add_child(ui._button("🔀 迁移采掘头(500)", ui._v40_request_mining_action.bind("RelocateMiningHead", {}), 26))
 	left_vbox.add_child(ui._button("📐 路线(绕行/直穿)", ui._v40_cmd.bind("ToggleBoreRouteMode", {}), 26))
-	left_vbox.add_child(ui._button("↩ 撤单退款(100%)", ui._v40_cmd.bind("CancelLastOrder", {}), 26))
-	left_vbox.add_child(ui._button("⬆ 平台改造(9000)", ui._v40_cmd.bind("UpgradeFacility", {"kind": "platform"}), 27))
-	left_vbox.add_child(ui._button("⬆ 主井扩容(120t)", ui._v40_cmd.bind("UpgradeFacility", {"kind": "bore"}), 27))
-	left_vbox.add_child(ui._button("📦 矿仓扩容(6000)", ui._v40_cmd.bind("UpgradeFacility", {"kind": "silo"}), 27))
+	left_vbox.add_child(ui._button("↩ 撤单退款(100%)", ui._v40_request_mining_action.bind("CancelLastOrder", {}), 26))
+	left_vbox.add_child(ui._button("⬆ 平台改造(9000)", ui._v40_request_mining_action.bind("UpgradeFacility", {"kind": "platform"}), 27))
+	left_vbox.add_child(ui._button("⬆ 主井扩容(120t)", ui._v40_request_mining_action.bind("UpgradeFacility", {"kind": "bore"}), 27))
+	left_vbox.add_child(ui._button("📦 矿仓扩容(6000)", ui._v40_request_mining_action.bind("UpgradeFacility", {"kind": "silo"}), 27))
 
 	left_vbox.add_child(ui._label("⚙ 运营状态与回收", 12, Color("83c7a6")))
 	left_vbox.add_child(ui._button("▶ 正常生产", ui._v40_cmd.bind("SetMineStatus", {"status": "running"}), 25))
 	left_vbox.add_child(ui._button("⏸ 暂停(25%维护)", ui._v40_cmd.bind("SetMineStatus", {"status": "paused"}), 25))
 	left_vbox.add_child(ui._button("🔒 封存(15Cr/日)", ui._v40_cmd.bind("SetMineStatus", {"status": "mothballed"}), 25))
-	left_vbox.add_child(ui._button("♻ 拆售采掘头(60%)", ui._v40_cmd.bind("SellEquipment", {}), 25))
+	left_vbox.add_child(ui._button("♻ 拆售采掘头(60%)", ui._v40_request_mining_action.bind("SellEquipment", {}), 25))
 	left_vbox.add_child(ui._button("🌐 共享船池开关", ui._v40_cmd.bind("ToggleSharedFleetPool", {}), 24))
 	left_vbox.add_child(ui._button("📋 存地表预设", ui._v40_cmd.bind("SaveSurfacePreset", {}), 24))
-	left_vbox.add_child(ui._button("⚡ 应用地表预设", ui._v40_cmd.bind("ApplySurfacePreset", {}), 24))
+	left_vbox.add_child(ui._button("⚡ 应用地表预设", ui._v40_request_mining_action.bind("ApplySurfacePreset", {}), 24))
 
 	# 隐藏旧版已归并按钮，保持引用有效
 	ui.scan_button.visible = false
@@ -200,6 +202,15 @@ static func mount(ui: Control) -> void:
 	ui.star_map.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	ui.star_map.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	ui.star_map.custom_minimum_size = Vector2(400, 260)
+	# Legacy StarMapView is only visible in classic campaigns.
+	var v4_map: V40GalaxyMapView = V40GalaxyMap.new()
+	v4_map.name = "V40GalaxyMap"
+	v4_map.mine_selected.connect(ui._v40_select_mine)
+	v4_map.mine_activated.connect(ui._v40_enter_mine)
+	map_wrap.add_child(v4_map)
+	map_wrap.move_child(v4_map, 0)
+	ui.v40_galaxy_map_view = v4_map
+	ui.star_map.visible = false
 
 	var cluster_bar: PanelContainer = PanelContainer.new()
 	cluster_bar.add_theme_stylebox_override("panel", ui._style(Color("0b1622"), Color("2b4860"), 6, 8))
@@ -208,9 +219,16 @@ static func mount(ui: Control) -> void:
 	cluster_vbox.add_theme_constant_override("separation", 4)
 	cluster_bar.add_child(cluster_vbox)
 	cluster_vbox.add_child(ui._label("🌌 破晓星域五大星团 · 轨道勘探(10日发现者排他期) 与 采矿许可购买/竞拍", 13, Color("f2b55c")))
+	# Six cards cannot fit in the available center pane; scroll them horizontally.
+	var cards_scroll: ScrollContainer = ScrollContainer.new()
+	cards_scroll.custom_minimum_size.y = 186
+	cards_scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	cards_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+	cards_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	cluster_vbox.add_child(cards_scroll)
 	var cluster_cards_row: HBoxContainer = HBoxContainer.new()
-	cluster_cards_row.add_theme_constant_override("separation", 6)
-	cluster_vbox.add_child(cluster_cards_row)
+	cluster_cards_row.add_theme_constant_override("separation", 8)
+	cards_scroll.add_child(cluster_cards_row)
 	ui.v40_cluster_cards_box = cluster_cards_row
 
 	# 视图 3：集团总览大面板 (第 3.2, 9, 10, 12, 14, 15.6 章：合同、20项研究、单步精炼、星港投资、三口径财务与终局工程)
@@ -250,6 +268,17 @@ static func mount(ui: Control) -> void:
 	body.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	body.add_theme_constant_override("separation", 6)
 	side_scroll.add_child(body)
+
+	# Persistent mine inspector sits at the top of the right-hand sidebar.
+	var inspector: V40MiningInspector = MiningInspector.new()
+	inspector.visible = false
+	inspector.route_requested.connect(ui._v40_route_preview_selected)
+	inspector.action_requested.connect(ui._v40_request_mining_action)
+	inspector.clear_requested.connect(ui._v40_clear_mining_target)
+	body.add_child(inspector)
+	ui.v40_mining_inspector = inspector
+	ui.v40_mining_feedback = ui._paragraph("", 12, Color("49d6e4"))
+	body.add_child(ui.v40_mining_feedback)
 
 	body.add_child(ui._label("🎬 起降与运输实况 (2.5D 演出层)", 12, Color("49d6e4")))
 	var astra_full: Control = LaunchView.new()
@@ -334,6 +363,15 @@ static func mount(ui: Control) -> void:
 	auction_modal.close_requested.connect(ui._on_auction_closed)
 	ui.add_child(auction_modal)
 	ui.auction_hall_modal = auction_modal
+
+	# The user must approve paid or destructive mining operations.
+	var mine_confirm: ConfirmationDialog = ConfirmationDialog.new()
+	mine_confirm.title = "确认矿场操作"
+	mine_confirm.min_size = Vector2i(540, 260)
+	mine_confirm.confirmed.connect(ui._v40_confirm_pending_mining_action)
+	mine_confirm.canceled.connect(ui._v40_cancel_pending_mining_action)
+	ui.add_child(mine_confirm)
+	ui.v40_mining_confirm_dialog = mine_confirm
 
 	ui.board_window = Window.new()
 	ui.board_window.title = "《星矿大亨 V4.0》旧版兼容与存档终端"

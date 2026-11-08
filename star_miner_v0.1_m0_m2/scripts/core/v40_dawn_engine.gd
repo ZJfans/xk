@@ -1252,11 +1252,24 @@ static func _cmd_scan_area(state: GameState, v40: Dictionary, params: Dictionary
 		return {"ok": false, "error": "可支配现金不足（地面扫描需 %d Cr）。" % cost}
 
 	var revealed_name: String = ""
-	for d in mine["deposits"]:
-		if not bool(d.get("revealed", false)):
-			d["revealed"] = true
-			revealed_name = str(d["name_zh"])
-			break
+	var requested_index: int = int(params.get("deposit_index", -1))
+	var deposits: Array = mine["deposits"]
+	if requested_index >= 0:
+		# Explicit player click MUST reveal this deposit, never another deposit.
+		if requested_index >= deposits.size():
+			return {"ok": false, "error": "地面扫描目标不存在。"}
+		var chosen: Dictionary = deposits[requested_index]
+		if bool(chosen.get("revealed", false)):
+			return {"ok": false, "error": "该矿体已扫描揭示，请选择其他目标。"}
+		chosen["revealed"] = true
+		revealed_name = str(chosen["name_zh"])
+	else:
+		# Legacy toolbar/API compatibility: scan first unknown deposit.
+		for d in deposits:
+			if not bool(d.get("revealed", false)):
+				d["revealed"] = true
+				revealed_name = str(d["name_zh"])
+				break
 	if revealed_name == "":
 		return {"ok": false, "error": "该矿区所有局部矿体均已扫描揭示（重复扫描不重新抽取矿体）。"}
 

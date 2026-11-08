@@ -29,6 +29,7 @@ const DARK_GRAY: Color = Color("45525c")
 var state: GameState
 var star_id: String = ""
 var hovered_deposit_idx: int = -1
+var selected_deposit_idx: int = -1
 var hovered_facility: String = ""
 
 
@@ -145,14 +146,13 @@ func _gui_input(event: InputEvent) -> void:
 			var d: Dictionary = deposits[idx]
 			var dpos: Vector2 = _grid_to_screen(int(d["gx"]), int(d["gy"]), w, h, surf_y)
 			if pos.distance_to(dpos) <= 46.0:
-				if not bool(d.get("revealed", false)):
-					cross_section_action.emit("v40_scan")
-				else:
-					cross_section_action.emit("v40_head:%d" % idx)
+				# Selection is free. Scan/build commands come only after explicit approval.
+				cross_section_action.emit("v40_select_deposit:%d" % idx)
 				accept_event()
 				return
 
-		cross_section_action.emit("v40_scan")
+		# Empty underground click clears selection; no accidental paid scan.
+		cross_section_action.emit("v40_select_deposit:-1")
 		accept_event()
 
 
@@ -308,7 +308,7 @@ func _draw() -> void:
 		var rem_t: int = int(d.get("remaining_t", 0))
 		var min_col: Color = _mineral_color(str(d.get("mineral_id", "iron_titanium")))
 		var min_name: String = _mineral_name(str(d.get("mineral_id", "iron_titanium")))
-		var is_hov: bool = (hovered_deposit_idx == idx)
+		var is_hov: bool = (hovered_deposit_idx == idx or selected_deposit_idx == idx)
 
 		if not is_rev:
 			var pulse: float = 0.38 + 0.22 * sin(now_sec * 3.2 + float(idx))
@@ -320,7 +320,7 @@ func _draw() -> void:
 				draw_arc(dpos, scan_rad_px, 0.0, TAU, 36, GOLD, 1.5, true)
 				var sweep_ang: float = fmod(now_sec * 3.6, TAU)
 				draw_line(dpos, dpos + Vector2(cos(sweep_ang), sin(sweep_ang)) * scan_rad_px, Color(0.42, 0.92, 1.0, 0.75), 1.8)
-			_draw_label(dpos + Vector2(-48, 4), "📡 模糊矿化信号 (点击扫描)", 11, GOLD if is_hov else CYAN_BRIGHT)
+			_draw_label(dpos + Vector2(-48, 4), "📡 模糊矿化信号 (点击选择)", 11, GOLD if is_hov else CYAN_BRIGHT)
 		else:
 			var plan: Dictionary = V40.calc_bore_plan(v40, mine_id, idx)
 			var is_detour_line: bool = bool(d.get("used_detour", false)) if heads > 0 else bool(plan.get("use_detour", false))
@@ -373,11 +373,17 @@ func _draw() -> void:
 			if heads > 0 and rem_t <= 0:
 				sub_str = "⚠ 已采空！可点左侧【迁移采掘头(500Cr)】移往新矿脉"
 			elif heads > 0:
-				sub_str = "✓ 采掘头 ×%d (点击增设 +40t/日)" % heads
+				sub_str = "✓ 采掘头 ×%d (点击选择，右栏可增设)" % heads
 			else:
-				sub_str = "▶ %s · 总计 %d Cr (工期 %.1f日)" % [str(plan["route_desc_zh"]), int(plan["total_cost_cr"]), float(plan["work_days"])]
+				sub_str = "▶ 点击查看方案：%s · %d Cr (%.1f日)" % [str(plan["route_desc_zh"]), int(plan["total_cost_cr"]), float(plan["work_days"])]
 			_draw_label(dpos + Vector2(-58, rad + 15.0), tag_str, 11, GOLD if is_hov else INK)
 			_draw_label(dpos + Vector2(-58, rad + 29.0), sub_str, 10, RED if (heads > 0 and rem_t <= 0) else (GREEN if heads > 0 else (GOLD if is_hov else CYAN_BRIGHT)))
+
+	# Persistent selected target ring, distinct from transient mouse hover.
+	if selected_deposit_idx >= 0 and selected_deposit_idx < deposits.size():
+		var chosen_dep: Dictionary = deposits[selected_deposit_idx]
+		var chosen_pos: Vector2 = _grid_to_screen(int(chosen_dep["gx"]), int(chosen_dep["gy"]), w, h, surf_y)
+		draw_arc(chosen_pos, 40.0, 0.0, TAU, 52, GOLD, 2.2, true)
 
 	# 5. 底部 Astra 风格实时瓶颈解释与操作预览条 (第 16.3 & 16.4 节)
 	draw_rect(Rect2(0, h - 26.0, w, 26.0), Color("081523"))
@@ -396,11 +402,11 @@ func _draw() -> void:
 	elif hovered_facility == "landing_pad":
 		var win_m: String = str(v40.get("launch_window_mode", "standard"))
 		var win_z: String = "☀晴空顺风(运费-8%)" if win_m == "optimal" else ("⛅标准窗口" if win_m == "standard" else "⚡引力快航(周期-15%)")
-		preview_line = "🚀【地表起降泊位】当前矿仓待运 %d/%d t | 发射窗口: %s | 左键点击立即指令运矿船点火升空装运！" % [stock_t, cap_t, win_z]
+		preview_line = "🚀【地表起降泊位】当前矿仓待运 %d/%d t | 发射窗口: %s | 左键预览发运操作并确认。" % [stock_t, cap_t, win_z]
 	elif hovered_facility == "drill_platform":
-		preview_line = "⛏【地表钻井台】当前提升上限 %.0f t/日 | 左键点击升级平台提升能力 (60→100 t/日，耗资 4,500 Cr)" % lift_cap
+		preview_line = "⛏【地表钻井台】当前提升上限 %.0f t/日 | 点击预览平台升级 (60→100 t/日，9,000 Cr)" % lift_cap
 	elif hovered_facility == "surface_silo":
-		preview_line = "📦【地表矿仓】当前库存 %d/%d t | 左键点击扩建矿仓容量 (+500 t，耗资 3,000 Cr)" % [stock_t, cap_t]
+		preview_line = "📦【地表矿仓】当前库存 %d/%d t | 点击预览扩建仓容 (+500 t，6,000 Cr)" % [stock_t, cap_t]
 	_draw_label(Vector2(10, h - 8.0), preview_line, 11, GOLD if (hovered_deposit_idx >= 0 or hovered_facility != "") else CYAN_BRIGHT)
 
 
